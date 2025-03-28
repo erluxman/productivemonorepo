@@ -1,0 +1,30 @@
+### Variables
+### run with this command 
+###firebase emulators:start --only functions,firestore --project productive-78c0e
+@baseUrl = http://localhost:5002/productive-78c0e/us-central1/api
+@todoId = TODO_ID
+
+### Create a new todo
+POST {{baseUrl}}/todos
+Content-Type: application/json
+
+{
+  "title": "Test todo",
+  "description": "Testing the todo API"
+}
+
+### Get all todos
+GET {{baseUrl}}/todos
+
+### Update a todo
+PUT {{baseUrl}}/todos/{{todoId}}
+Content-Type: application/json
+
+{
+  "title": "Updated todo title",
+  "description": "Updated description",
+  "completed": true
+}
+
+### Delete a todo
+DELETE {{baseUrl}}/todos/{{todoId}} 
