@@ -1,6 +1,5 @@
+
 ### Variables
-### run with this command 
-###firebase emulators:start --only functions,firestore --project productive-78c0e
 @baseUrl = http://localhost:5002/productive-78c0e/us-central1/api
 @todoId = TODO_ID
 
