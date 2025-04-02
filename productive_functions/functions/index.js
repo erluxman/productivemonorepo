@@ -25,7 +25,15 @@ if (process.env.FUNCTIONS_EMULATOR) {
 
 // Initialize Express
 const app = express();
-app.use(cors());
+
+// Configure CORS
+app.use(
+  cors({
+    origin: true, // Allow all origins
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }));
+
 app.use(express.json());
 
 // Collection reference
@@ -159,5 +167,10 @@ app.delete("/todos/:id", async (req, res) => {
   }
 });
 
-// Export the API
-exports.api = functions.https.onRequest(app);
+// Export the API with public access
+exports.api = functions.https.onRequest(
+  {
+    cors: true,
+    maxInstances: 10,
+  },
+  app);

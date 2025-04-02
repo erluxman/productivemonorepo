@@ -18,3 +18,33 @@ alias startEmulators="firebase emulators:start --import=./firebase-data --export
 ```
 
 ```
+
+To deploy the functions, we need to run the following command:
+
+```bash
+firebase deploy --only functions
+```
+
+To call the functions, using HTTP we need to call the following rest api
+
+```bash
+curl http://localhost:5002/todo-app-4200/us-central1/createTodo
+```
+
+and the firebase function urls are
+
+```bash
+https://us-central1-productive-78c0e.cloudfunctions.net/createUser
+```
+
+
+
+# Install Google Cloud SDK (on macOS)
+
+brew install --cask google-cloud-sdk
+
+# Then authenticate and clean up
+
+```bash
+gcloud auth login gcloud container images list-tags gcr.io/productive-78c0e/us/gcf --format="get(digest)" | while read digest; do gcloud container images delete "gcr.io/productive-78c0e/us/gcf@$digest" --quiet; done
+```

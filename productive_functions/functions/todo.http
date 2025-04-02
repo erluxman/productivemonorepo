@@ -11,6 +11,14 @@ Content-Type: application/json
   "title": "Test task",
   "description": "make a testing api"
 }
+### Create a new todo on backend
+POST https://api-z33lyit4hq-uc.a.run.app/todos
+Content-Type: application/json
+
+{
+  "title": "Test task",
+  "description": "make a testing api"
+}
 
 ### Get all todos
 GET {{baseUrl}}/todos
