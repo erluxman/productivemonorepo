@@ -8,8 +8,8 @@ POST {{baseUrl}}/todos
 Content-Type: application/json
 
 {
-  "title": "Test todo",
-  "description": "Testing the todo API"
+  "title": "Test task",
+  "description": "make a testing api"
 }
 
 ### Get all todos

@@ -10,17 +10,27 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
-      ]
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run lint"]
     }
   ],
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "emulators": {
     "functions": {
       "port": 5002
     },
     "firestore": {
-      "port": 8080
+      "port": 8080,
+      "host": "127.0.0.1",
+      "data": "./firestore-data"
+    },
+    "export-on-exit": {
+      "directory": "./firebase-data"
+    },
+    "import": {
+      "directory": "./firebase-data"
     },
     "ui": {
       "enabled": true,
