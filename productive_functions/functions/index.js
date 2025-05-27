@@ -15,9 +15,12 @@ const cors = require("cors");
 // Initialize Firebase
 admin.initializeApp();
 
+// Initialize Firestore
+const db = admin.firestore();
+
 // Initialize Firestore with emulator settings if in development
 if (process.env.FUNCTIONS_EMULATOR) {
-  admin.firestore().settings({
+  db.settings({
     host: "localhost:8080",
     ssl: false,
   });
@@ -32,7 +35,8 @@ app.use(
     origin: true, // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }));
+  }),
+);
 
 app.use(express.json());
 
@@ -57,10 +61,7 @@ app.post("/todos", async (req, res) => {
 
     console.log("Creating todo:", todo);
 
-    const docRef = await admin
-      .firestore()
-      .collection(todosCollection)
-      .add(todo);
+    const docRef = await db.collection(todosCollection).add(todo);
 
     console.log("Todo created with ID:", docRef.id);
 
@@ -84,8 +85,7 @@ app.post("/todos", async (req, res) => {
 // Get all todos
 app.get("/todos", async (req, res) => {
   try {
-    const snapshot = await admin
-      .firestore()
+    const snapshot = await db
       .collection(todosCollection)
       .orderBy("createdAt", "desc")
       .get();
@@ -114,7 +114,7 @@ app.put("/todos/:id", async (req, res) => {
     const { id } = req.params;
     const { title, description, completed } = req.body;
 
-    const todoRef = admin.firestore().collection(todosCollection).doc(id);
+    const todoRef = db.collection(todosCollection).doc(id);
     const todoDoc = await todoRef.get();
 
     if (!todoDoc.exists) {
@@ -149,7 +149,7 @@ app.put("/todos/:id", async (req, res) => {
 app.delete("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const todoRef = admin.firestore().collection(todosCollection).doc(id);
+    const todoRef = db.collection(todosCollection).doc(id);
     const todoDoc = await todoRef.get();
 
     if (!todoDoc.exists) {
@@ -172,5 +172,7 @@ exports.api = functions.https.onRequest(
   {
     cors: true,
     maxInstances: 10,
+    invoker: "public", // Allow unauthenticated access
   },
-  app);
+  app,
+);
