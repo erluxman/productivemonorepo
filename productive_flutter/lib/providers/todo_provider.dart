@@ -8,7 +8,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           // Add some sample todos
           Todo(
             title: "Wake up before 5:00 AM",
-            deadline: DateTime.now()
+            dueDate: DateTime.now()
                 .add(const Duration(days: 1))
                 .copyWith(hour: 5, minute: 0),
             category: TodoCategory.habits,
@@ -16,13 +16,13 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           ),
           Todo(
             title: "Write tomorrow's TODO",
-            deadline: DateTime.now().copyWith(hour: 20, minute: 30),
+            dueDate: DateTime.now().copyWith(hour: 20, minute: 30),
             category: TodoCategory.personal,
-            isCompleted: true,
+            completed: true,
           ),
           Todo(
             title: "Read Atomic Habits",
-            deadline: DateTime.now().copyWith(hour: 21, minute: 15),
+            dueDate: DateTime.now().copyWith(hour: 21, minute: 15),
             category: TodoCategory.learning,
           ),
         ]);
@@ -36,7 +36,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   void toggleTodoCompletion(String id) {
     state = state.map((todo) {
       if (todo.id == id) {
-        return todo.copyWith(isCompleted: !todo.isCompleted);
+        return todo.copyWith(completed: !(todo.completed ?? false));
       }
       return todo;
     }).toList();
@@ -52,6 +52,16 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
     state = state.map((todo) {
       if (todo.id == id) {
         return todo.copyWith(feedMessage: feedMessage);
+      }
+      return todo;
+    }).toList();
+  }
+
+  // Update a todo
+  void updateTodo(Todo updatedTodo) {
+    state = state.map((todo) {
+      if (todo.id == updatedTodo.id) {
+        return updatedTodo;
       }
       return todo;
     }).toList();

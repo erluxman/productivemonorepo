@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../core/models/todo.dart';
+import 'package:productive_flutter/models/todo.dart';
 
 class AddTodoDialog extends StatefulWidget {
   const AddTodoDialog({super.key});
@@ -71,6 +70,8 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
                   description: _descriptionController.text,
                   completed: false,
                   createdAt: DateTime.now(),
+                  dueDate: DateTime.now(),
+                  category: TodoCategory.personal,
                 ),
               );
             }

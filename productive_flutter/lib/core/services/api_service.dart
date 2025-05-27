@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import '../models/todo.dart';
+import 'package:productive_flutter/models/todo.dart';
 
 class ApiService {
   static const String baseUrl =
@@ -16,12 +16,15 @@ class ApiService {
       print('Fetching todos from: $baseUrl');
       final url = '$baseUrl/todos';
       final response = await _client.get(Uri.parse(url));
+      debugPrint('Response: ${response.body}');
       print('Response status code: ${response.statusCode}');
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = json.decode(response.body);
-        return jsonList.map((json) => Todo.fromJson(json)).toList();
+        final todos = jsonList.map((json) => Todo.fromJson(json)).toList();
+        print('Todos: $todos');
+        return todos;
       } else {
         throw Exception(
             'Failed to load todos. Status code: ${response.statusCode}');
@@ -33,19 +36,14 @@ class ApiService {
     }
   }
 
-  Future<Todo> createTodo({
-    required String title,
-    required String description,
-  }) async {
+  Future<Todo> createTodo({required Todo todo}) async {
     try {
-      print('Creating todo with title: $title');
+      print('Creating todo with title: ${todo.title}');
+      final todoBody = todo.toJson();
       final response = await _client.post(
         Uri.parse('$baseUrl/todos'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'title': title,
-          'description': description,
-        }),
+        body: json.encode(todoBody),
       );
       print('Create todo response status: ${response.statusCode}');
       print('Create todo response body: ${response.body}');
@@ -64,7 +62,7 @@ class ApiService {
   }
 
   Future<Todo> updateTodo({
-    required String id,
+    required String? id,
     String? title,
     String? description,
     bool? completed,

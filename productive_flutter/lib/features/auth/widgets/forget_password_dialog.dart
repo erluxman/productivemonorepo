@@ -14,17 +14,16 @@ class ForgotPasswordDialog extends StatefulWidget {
   @override
   State<ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
 
-  static Future<bool?> show(BuildContext context) async {
+  static Future<bool?> show(
+    BuildContext context, {
+    required Future<bool> Function(String email) onSubmit,
+  }) async {
     return showCustomDialog<bool>(
       context: context,
       barrierDismissible: false,
       useBlurBackground: true,
       builder: (context) => ForgotPasswordDialog(
-        onSubmit: (loginId) async {
-          // Simulate API call
-          await Future.delayed(const Duration(milliseconds: 750));
-          return true;
-        },
+        onSubmit: onSubmit,
       ),
     );
   }

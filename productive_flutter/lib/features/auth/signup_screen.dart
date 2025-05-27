@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:productive_flutter/features/auth/widgets/signup_form.dart';
 import 'package:productive_flutter/features/home/home_screen.dart';
 import 'package:productive_flutter/features/splash/splash_screen.dart';
+import 'package:productive_flutter/providers/auth_provider.dart';
 import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
 
 import '../../../core/utils/haptics.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _acceptedTerms = false;
   bool _privacyPolicyError = false;
@@ -42,12 +44,52 @@ class _SignupScreenState extends State<SignupScreen> {
     final isEmailValid = _emailController.text.isNotEmpty &&
         _emailController.text.contains('@') &&
         _emailController.text.contains('.');
+    final isPasswordValid = _passwordController.text.length >= 6;
 
     setState(() {
-      _isValid = _acceptedTerms && isEmailValid;
+      _isValid = _acceptedTerms && isEmailValid && isPasswordValid;
       _privacyPolicyError =
           !_acceptedTerms && _formKey.currentState?.validate() == true;
     });
+  }
+
+  Future<void> _signup() async {
+    if (!_acceptedTerms) {
+      setState(() {
+        _privacyPolicyError = true;
+      });
+      return;
+    }
+
+    if (_formKey.currentState?.validate() != true) return;
+
+    final authController = ref.read(authControllerProvider.notifier);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    // Clear any previous errors
+    authController.clearError();
+
+    final success = await authController.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    if (success && mounted) {
+      // Navigation will be handled automatically by the auth state listener in main.dart
+      context.navigateToReplacing(const HomeScreen());
+    } else if (mounted) {
+      // Show error message
+      final error = ref.read(authControllerProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _navigateTo(BuildContext context, Widget destination) async {
@@ -67,6 +109,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -110,6 +153,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   acceptedTerms: _acceptedTerms,
                   privacyPolicyError: _privacyPolicyError,
                   isValid: _isValid,
+                  isLoading: authState.isLoading,
                   onTermsChanged: (value) {
                     setState(() {
                       _acceptedTerms = value ?? false;
@@ -123,7 +167,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   onTermsOfServiceTap: () {
                     // Show terms of service
                   },
-                  onSignup: () => _navigateTo(context, const HomeScreen()),
+                  onSignup: _signup,
                   navigateTo: _navigateTo,
                 ),
               ],

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:productive_flutter/features/splash/splash_screen.dart';
+import 'package:productive_flutter/providers/auth_provider.dart';
 import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
 
 import '../../core/theme/theme_notifier.dart';
@@ -10,6 +12,10 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authController = ref.watch(authControllerProvider.notifier);
+    final userEmail = authController.userEmail;
+    final userDisplayName = authController.userDisplayName;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -17,11 +23,11 @@ class ProfileScreen extends ConsumerWidget {
           shrinkWrap: false,
           children: [
             _buildHeader(context, ref),
-            _buildProfileInfo(),
+            _buildProfileInfo(userDisplayName, userEmail),
             const SizedBox(height: 16),
             _buildSettingsSection(context),
             const SizedBox(height: 64),
-            _buildLogoutButton(context),
+            _buildLogoutButton(context, ref),
             const SizedBox(height: 16),
             _buildDeleteAccountButton(),
           ],
@@ -52,7 +58,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileInfo() {
+  Widget _buildProfileInfo(String? displayName, String? email) {
     return Column(
       children: [
         const SizedBox(height: 20),
@@ -101,16 +107,16 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'erluxman',
-          style: TextStyle(
+        Text(
+          displayName ?? 'User',
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'erluxman@gmail.com',
+          email ?? 'user@example.com',
           style: TextStyle(
             fontSize: 16,
             color: Colors.blue[500],
@@ -216,21 +222,61 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authControllerProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        onPressed: () {},
+        onPressed: authState.isLoading
+            ? null
+            : () async {
+                // Show confirmation dialog
+                final shouldLogout = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Logout'),
+                    content: const Text('Are you sure you want to logout?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('Logout'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (shouldLogout == true && context.mounted) {
+                  final authController =
+                      ref.read(authControllerProvider.notifier);
+                  await authController.signOut();
+
+                  if (context.mounted) {
+                    // Navigate to splash screen
+                    context.navigateToReplacing(const SplashScreen());
+                  }
+                }
+              },
         heroTag: 'logout_button',
-        icon: const Icon(
-          Icons.logout_rounded,
-          size: 28,
-        ),
-        label: const Text(
-          'Logout',
+        icon: authState.isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(
+                Icons.logout_rounded,
+                size: 28,
+              ),
+        label: Text(
+          authState.isLoading ? 'Logging out...' : 'Logout',
           textAlign: TextAlign.start,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),

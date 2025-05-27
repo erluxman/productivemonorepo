@@ -8,7 +8,7 @@
 PRODUCT_NAME = productive_flutter
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.productiveFlutter
+PRODUCT_BUNDLE_IDENTIFIER = com.erluxman.productive
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.

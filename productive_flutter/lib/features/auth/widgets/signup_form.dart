@@ -15,6 +15,7 @@ class SignupForm extends StatelessWidget {
     required this.acceptedTerms,
     required this.privacyPolicyError,
     required this.isValid,
+    required this.isLoading,
     required this.onTermsChanged,
     required this.onPrivacyPolicyTap,
     required this.onTermsOfServiceTap,
@@ -28,6 +29,7 @@ class SignupForm extends StatelessWidget {
   final bool acceptedTerms;
   final bool privacyPolicyError;
   final bool isValid;
+  final bool isLoading;
   final Function(bool?) onTermsChanged;
   final VoidCallback onPrivacyPolicyTap;
   final VoidCallback onTermsOfServiceTap;
@@ -72,32 +74,41 @@ class SignupForm extends StatelessWidget {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: isValid
-                        ? () {
+                    onPressed: (isLoading || !isValid)
+                        ? null
+                        : () {
                             Haptics.medium();
                             onSignup();
-                          }
-                        : null,
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
                       disabledBackgroundColor:
                           colorScheme.surfaceContainerHighest.withAlpha(204),
                       disabledForegroundColor: colorScheme.onSurfaceVariant,
-                      elevation: isValid ? 4 : 0,
+                      elevation: (isLoading || !isValid) ? 0 : 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: Text(
-                      'Create Account',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isValid
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                    child: isLoading
+                        ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colorScheme.onPrimary,
+                            ),
+                          )
+                        : Text(
+                            'Create Account',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isValid
+                                  ? colorScheme.onPrimary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 32),

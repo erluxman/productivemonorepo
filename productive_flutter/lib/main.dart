@@ -1,16 +1,22 @@
 import 'dart:io' show Platform;
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_notifier.dart';
+import 'features/home/home_screen.dart';
 import 'features/splash/splash_screen.dart';
+import 'providers/auth_provider.dart';
 
-void main() {
+void main() async {
   // Enable Flutter scrolling on desktop platforms
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
 
   // Set scroll behavior for desktop platforms
   GestureBinding.instance.resamplingEnabled = true;
@@ -28,6 +34,7 @@ class ProductiveApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
+    final authState = ref.watch(authStateProvider);
 
     return MaterialApp(
       title: 'Productive App',
@@ -36,7 +43,16 @@ class ProductiveApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode, // Use the theme mode from the provider
-      home: const SplashScreen(),
+      home: authState.when(
+        data: (user) =>
+            user != null ? const HomeScreen() : const SplashScreen(),
+        loading: () => const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        error: (error, stack) => const SplashScreen(),
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/models/todo.dart';
 import 'package:productive_flutter/providers/todo_provider.dart';
 
+import '../../../core/providers/api_provider.dart';
 import 'todo_form_fields.dart';
 import 'todo_success_step.dart';
 
@@ -15,7 +16,9 @@ enum AddTodoStep {
 }
 
 class AddTodoDialog extends ConsumerStatefulWidget {
-  const AddTodoDialog({super.key});
+  final Todo? todoToEdit; // Optional todo for editing
+
+  const AddTodoDialog({super.key, this.todoToEdit});
 
   @override
   ConsumerState<AddTodoDialog> createState() => _AddTodoDialogState();
@@ -30,7 +33,8 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
   // Form values
   TodoCategory? _selectedCategory;
   String _todoTitle = '';
-  DateTime? _deadline;
+  String _todoDescription = '';
+  DateTime? _dueDate;
 
   @override
   void initState() {
@@ -39,6 +43,14 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
       vsync: this,
       duration: AppTheme.fabAnimationDuration,
     );
+
+    // Pre-fill form if editing an existing todo
+    if (widget.todoToEdit != null) {
+      _selectedCategory = widget.todoToEdit!.category;
+      _todoTitle = widget.todoToEdit!.title;
+      _todoDescription = widget.todoToEdit!.description ?? '';
+      _dueDate = widget.todoToEdit!.dueDate;
+    }
   }
 
   @override
@@ -53,8 +65,6 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
 
   @override
   Widget build(BuildContext context) {
-    final dialogHeight = _currentStep == AddTodoStep.edit ? 480.0 : 220.0;
-
     return Dialog(
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -65,7 +75,6 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
           duration: AppTheme.fabAnimationDuration,
           curve: Curves.easeInOut,
           width: double.infinity,
-          height: dialogHeight,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -81,30 +90,30 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                _currentStep == AddTodoStep.edit ? 'Add New Todo' : 'Success',
+                _currentStep == AddTodoStep.edit
+                    ? (widget.todoToEdit != null ? 'Edit Todo' : 'Add New Todo')
+                    : 'Success',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: AppTheme.fabAnimationDuration,
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ScaleTransition(
-                        scale: animation,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: _buildCurrentStep(),
-                ),
+              const SizedBox(height: 48),
+              AnimatedSwitcher(
+                duration: AppTheme.fabAnimationDuration,
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildCurrentStep(widget.todoToEdit),
               ),
             ],
           ),
@@ -113,14 +122,15 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
     );
   }
 
-  Widget _buildCurrentStep() {
+  Widget _buildCurrentStep(Todo? todoToEdit) {
     switch (_currentStep) {
       case AddTodoStep.edit:
         return TodoFormFields(
           formKey: _formKey,
           selectedCategory: _selectedCategory,
           todoTitle: _todoTitle,
-          deadline: _deadline,
+          todoDescription: _todoDescription,
+          deadline: _dueDate,
           onCategoryChanged: (value) {
             setState(() {
               _selectedCategory = value;
@@ -131,8 +141,14 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
               _todoTitle = value;
             });
           },
+          onDescriptionChanged: (value) {
+            setState(() {
+              _todoDescription = value;
+            });
+          },
           onDeadlineTap: () => _selectDeadline(context),
           onSave: _createTodo,
+          isEditing: widget.todoToEdit != null,
         );
       case AddTodoStep.success:
         return const TodoSuccessStep();
@@ -147,7 +163,7 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
 
     if (picked != null) {
       setState(() {
-        _deadline = DateTime.now().add(const Duration(days: 1)).copyWith(
+        _dueDate = DateTime.now().add(const Duration(days: 1)).copyWith(
               hour: picked.hour,
               minute: picked.minute,
             );
@@ -155,29 +171,69 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
     }
   }
 
-  void _createTodo() {
+  void _createTodo() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Update points first
-    ref.read(core_points.pointsProvider.notifier).subtractPoints(2);
+    try {
+      if (widget.todoToEdit != null) {
+        // Updating existing todo
+        final updatedTodo = widget.todoToEdit!.copyWith(
+          title: _todoTitle,
+          category: _selectedCategory,
+          dueDate: _dueDate,
+          description: _todoDescription,
+        );
 
-    // Create and add the todo
-    final newTodo = Todo(
-      title: _todoTitle,
-      deadline: _deadline!,
-      category: _selectedCategory!,
-    );
+        // Update via API
+        await ref.read(todosProvider.notifier).updateTodo(
+              id: widget.todoToEdit!.id!,
+              title: _todoTitle,
+              description:
+                  _todoDescription.isNotEmpty ? _todoDescription : null,
+            );
 
-    ref.read(todoProvider.notifier).addTodo(newTodo);
+        // Update local provider
+        ref.read(todoProvider.notifier).updateTodo(updatedTodo);
+      } else {
+        // Creating new todo
+        // Update points first
+        ref.read(core_points.pointsProvider.notifier).subtractPoints(2);
 
-    // Show success screen briefly before closing
-    setState(() {
-      _currentStep = AddTodoStep.success;
-    });
+        // Create and add the todo
+        final newTodo = Todo(
+          title: _todoTitle,
+          dueDate: _dueDate,
+          category: _selectedCategory!,
+          createdAt: DateTime.now(),
+          description: _todoDescription,
+        );
 
-    // Wait a moment and close the dialog
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      _closeDialog();
-    });
+        ref.read(todoProvider.notifier).addTodo(newTodo);
+        await ref.read(todosProvider.notifier).createTodo(todo: newTodo);
+      }
+
+      // Show success screen briefly before closing
+      setState(() {
+        _currentStep = AddTodoStep.success;
+      });
+
+      // Wait a moment and close the dialog
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          _closeDialog();
+        }
+      });
+    } catch (e) {
+      // Revert points if todo creation failed (only for new todos)
+      if (widget.todoToEdit == null) {
+        ref.read(core_points.pointsProvider.notifier).addPoints(2);
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 }

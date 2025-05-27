@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
+
+part 'todo.g.dart';
 
 enum TodoCategory {
   habits,
@@ -39,41 +42,58 @@ enum TodoCategory {
   }
 }
 
+@JsonSerializable()
 class Todo {
-  final String id;
+  final String? id;
   final String title;
-  final DateTime deadline;
-  final TodoCategory category;
-  final bool isCompleted;
-  final bool isUrgent;
+  final String? description;
+  final TodoCategory? category;
+  final bool? completed;
+  final bool? isUrgent;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final DateTime? dueDate;
   final String? feedMessage;
 
   Todo({
     String? id,
     required this.title,
-    required this.deadline,
+    this.description,
     required this.category,
-    this.isCompleted = false,
+    this.completed = false,
     this.isUrgent = false,
     this.feedMessage,
+    this.createdAt,
+    this.updatedAt,
+    this.dueDate,
   }) : id = id ?? const Uuid().v4();
+
+  factory Todo.fromJson(Map<String, dynamic> json) => _$TodoFromJson(json);
+  Map<String, dynamic> toJson() => _$TodoToJson(this);
 
   Todo copyWith({
     String? title,
+    String? description,
     DateTime? deadline,
     TodoCategory? category,
-    bool? isCompleted,
+    bool? completed,
     bool? isUrgent,
     String? feedMessage,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? dueDate,
   }) {
     return Todo(
       id: id,
       title: title ?? this.title,
-      deadline: deadline ?? this.deadline,
+      description: description ?? this.description,
       category: category ?? this.category,
-      isCompleted: isCompleted ?? this.isCompleted,
+      completed: completed ?? this.completed,
       isUrgent: isUrgent ?? this.isUrgent,
       feedMessage: feedMessage ?? this.feedMessage,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      dueDate: dueDate ?? this.dueDate,
     );
   }
 }

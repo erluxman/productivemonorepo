@@ -1,4 +1,4 @@
-package com.example.productive_flutter
+package com.erluxman.productive
 
 import io.flutter.embedding.android.FlutterActivity
 

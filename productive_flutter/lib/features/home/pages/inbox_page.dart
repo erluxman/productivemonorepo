@@ -2,13 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/core/models/todo.dart';
 import 'package:productive_flutter/core/providers/api_provider.dart';
 import 'package:productive_flutter/core/providers/points_provider.dart';
 import 'package:productive_flutter/core/services/sound_service.dart';
 import 'package:productive_flutter/features/home/widgets/todo_item.dart';
 import 'package:productive_flutter/features/home/widgets/todo_success_dialog.dart';
 import 'package:productive_flutter/features/todo/widgets/add_todo_dialog.dart';
+
+import '../../../models/todo.dart';
 
 class AnimatedTodoTitle extends StatefulWidget {
   final String title;
@@ -154,14 +155,11 @@ class InboxPage extends ConsumerWidget {
                 todo: todo,
                 onToggle: () => _toggleTodoCompletion(context, ref, todo),
                 onDelete: () => _deleteTodo(context, ref, todo),
+                onTap: () => _editTodo(context, ref, todo),
               );
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddTodoDialog(context, ref),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -169,7 +167,7 @@ class InboxPage extends ConsumerWidget {
   Future<void> _toggleTodoCompletion(
       BuildContext context, WidgetRef ref, Todo todo) async {
     try {
-      if (!todo.completed) {
+      if (todo.completed == false) {
         // Completing a todo - show dialog first, then add points
         await ref.read(todosProvider.notifier).updateTodo(
               id: todo.id,
@@ -231,7 +229,7 @@ class InboxPage extends ConsumerWidget {
   Future<void> _deleteTodo(
       BuildContext context, WidgetRef ref, Todo todo) async {
     try {
-      await ref.read(todosProvider.notifier).deleteTodo(todo.id);
+      await ref.read(todosProvider.notifier).deleteTodo(todo.id!);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -239,6 +237,13 @@ class InboxPage extends ConsumerWidget {
         );
       }
     }
+  }
+
+  Future<void> _editTodo(BuildContext context, WidgetRef ref, Todo todo) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AddTodoDialog(todoToEdit: todo),
+    );
   }
 
   Future<void> _showAddTodoDialog(BuildContext context, WidgetRef ref) async {
@@ -249,10 +254,7 @@ class InboxPage extends ConsumerWidget {
 
     if (result != null && context.mounted) {
       try {
-        await ref.read(todosProvider.notifier).createTodo(
-              title: result.title,
-              description: result.description,
-            );
+        await ref.read(todosProvider.notifier).createTodo(todo: result);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),

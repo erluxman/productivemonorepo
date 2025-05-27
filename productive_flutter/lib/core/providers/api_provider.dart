@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/todo.dart';
+import '../../models/todo.dart';
 import '../services/api_service.dart';
 
 final apiServiceProvider = Provider<ApiService>((ref) {
@@ -31,14 +31,10 @@ class TodosNotifier extends StateNotifier<AsyncValue<List<Todo>>> {
   }
 
   Future<void> createTodo({
-    required String title,
-    required String description,
+    required Todo todo,
   }) async {
     try {
-      final newTodo = await _apiService.createTodo(
-        title: title,
-        description: description,
-      );
+      final newTodo = await _apiService.createTodo(todo: todo);
       state.whenData((todos) {
         state = AsyncValue.data([...todos, newTodo]);
       });
@@ -48,7 +44,7 @@ class TodosNotifier extends StateNotifier<AsyncValue<List<Todo>>> {
   }
 
   Future<void> updateTodo({
-    required String id,
+    required String? id,
     String? title,
     String? description,
     bool? completed,
@@ -70,7 +66,8 @@ class TodosNotifier extends StateNotifier<AsyncValue<List<Todo>>> {
     }
   }
 
-  Future<void> deleteTodo(String id) async {
+  Future<void> deleteTodo(String? id) async {
+    if (id == null) return;
     try {
       await _apiService.deleteTodo(id);
       state.whenData((todos) {

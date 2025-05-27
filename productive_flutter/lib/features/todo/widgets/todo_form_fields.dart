@@ -6,22 +6,28 @@ class TodoFormFields extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TodoCategory? selectedCategory;
   final String todoTitle;
+  final String todoDescription;
   final DateTime? deadline;
   final Function(TodoCategory?) onCategoryChanged;
   final Function(String) onTitleChanged;
+  final Function(String) onDescriptionChanged;
   final VoidCallback onDeadlineTap;
   final VoidCallback onSave;
+  final bool isEditing;
 
   const TodoFormFields({
     super.key,
     required this.formKey,
     required this.selectedCategory,
     required this.todoTitle,
+    required this.todoDescription,
     required this.deadline,
     required this.onCategoryChanged,
     required this.onTitleChanged,
+    required this.onDescriptionChanged,
     required this.onDeadlineTap,
     required this.onSave,
+    this.isEditing = false,
   });
 
   @override
@@ -37,10 +43,11 @@ class TodoFormFields extends StatelessWidget {
             const SizedBox(height: 16),
             _buildTitleInput(context),
             const SizedBox(height: 16),
+            _buildDescriptionInput(context),
+            const SizedBox(height: 16),
             _buildDeadlineSelector(context),
-            const SizedBox(height: 36),
             _buildPointsInfo(context),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSaveButton(context),
             const SizedBox(height: 2),
           ],
@@ -108,6 +115,7 @@ class TodoFormFields extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextFormField(
+        initialValue: todoTitle.isNotEmpty ? todoTitle : null,
         decoration: InputDecoration(
           hintText: 'Type Todo',
           border: InputBorder.none,
@@ -127,6 +135,32 @@ class TodoFormFields extends StatelessWidget {
           }
           return null;
         },
+      ),
+    );
+  }
+
+  Widget _buildDescriptionInput(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TextFormField(
+        initialValue: todoDescription.isNotEmpty ? todoDescription : null,
+        decoration: InputDecoration(
+          hintText: 'Type Description',
+          border: InputBorder.none,
+          labelStyle: Theme.of(context).textTheme.titleMedium,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          hintStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).hintColor,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        style: Theme.of(context).textTheme.bodyLarge,
+        onChanged: onDescriptionChanged,
+        maxLines: 3,
       ),
     );
   }
@@ -172,8 +206,13 @@ class TodoFormFields extends StatelessWidget {
   }
 
   Widget _buildPointsInfo(BuildContext context) {
+    if (isEditing) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: [
+        const SizedBox(height: 36),
         Icon(
           Icons.emoji_events,
           color: Colors.amber[600],
@@ -193,8 +232,7 @@ class TodoFormFields extends StatelessWidget {
   }
 
   Widget _buildSaveButton(BuildContext context) {
-    final bool isValid =
-        selectedCategory != null && todoTitle.isNotEmpty && deadline != null;
+    final bool isValid = selectedCategory != null && todoTitle.isNotEmpty;
 
     return ElevatedButton(
       onPressed: isValid ? onSave : null,
@@ -205,9 +243,9 @@ class TodoFormFields extends StatelessWidget {
           borderRadius: BorderRadius.circular(50),
         ),
       ),
-      child: const Text(
-        'Save',
-        style: TextStyle(
+      child: Text(
+        isEditing ? 'Update' : 'Save',
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold,
