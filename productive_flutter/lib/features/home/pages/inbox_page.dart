@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:productive_flutter/core/models/todo.dart';
 import 'package:productive_flutter/core/providers/api_provider.dart';
-import 'package:productive_flutter/features/home/widgets/add_todo_dialog.dart';
+import 'package:productive_flutter/core/providers/points_provider.dart';
+import 'package:productive_flutter/core/services/sound_service.dart';
 import 'package:productive_flutter/features/home/widgets/todo_item.dart';
 import 'package:productive_flutter/features/home/widgets/todo_success_dialog.dart';
+import 'package:productive_flutter/features/todo/widgets/add_todo_dialog.dart';
 
 class AnimatedTodoTitle extends StatefulWidget {
   final String title;
@@ -167,12 +169,16 @@ class InboxPage extends ConsumerWidget {
   Future<void> _toggleTodoCompletion(
       BuildContext context, WidgetRef ref, Todo todo) async {
     try {
-      await ref.read(todosProvider.notifier).updateTodo(
-            id: todo.id,
-            completed: !todo.completed,
-          );
-
       if (!todo.completed) {
+        // Completing a todo - show dialog first, then add points
+        await ref.read(todosProvider.notifier).updateTodo(
+              id: todo.id,
+              completed: true,
+            );
+
+        // Play sound when completing a todo
+        SoundService().playTodoCompleteSound();
+
         // Show success dialog only when completing a todo
         final targetPosition = _getPointsPosition(context);
         if (targetPosition != null) {
@@ -184,13 +190,34 @@ class InboxPage extends ConsumerWidget {
             ),
           );
 
-          if (feedMessage != null && feedMessage.isNotEmpty) {
+          // Only add points if the dialog was confirmed (not dismissed)
+          if (feedMessage != null) {
+            ref.read(pointsProvider.notifier).addPoints(5);
+
+            // Update with feed message if provided
+            if (feedMessage.isNotEmpty) {
+              await ref.read(todosProvider.notifier).updateTodo(
+                    id: todo.id,
+                    description: feedMessage,
+                  );
+            }
+          } else {
+            // Dialog was dismissed, revert the todo completion
             await ref.read(todosProvider.notifier).updateTodo(
                   id: todo.id,
-                  description: feedMessage,
+                  completed: false,
                 );
           }
         }
+      } else {
+        // Unchecking a completed todo - subtract points and update
+        await ref.read(todosProvider.notifier).updateTodo(
+              id: todo.id,
+              completed: false,
+            );
+
+        // Subtract points when unchecking a completed todo
+        ref.read(pointsProvider.notifier).subtractPoints(5);
       }
     } catch (e) {
       if (context.mounted) {

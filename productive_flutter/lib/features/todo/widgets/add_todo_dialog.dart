@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:productive_flutter/core/providers/points_provider.dart'
+    as core_points;
 import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/models/todo.dart';
 import 'package:productive_flutter/providers/todo_provider.dart';
@@ -157,8 +159,7 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
     if (!_formKey.currentState!.validate()) return;
 
     // Update points first
-    final currentPoints = ref.read(pointsProvider);
-    ref.read(pointsProvider.notifier).state = currentPoints - 2;
+    ref.read(core_points.pointsProvider.notifier).subtractPoints(2);
 
     // Create and add the todo
     final newTodo = Todo(
