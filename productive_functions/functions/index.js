@@ -35,7 +35,7 @@ app.use(
     origin: true, // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 
 app.use(express.json());
@@ -46,7 +46,7 @@ const todosCollection = "todos";
 // Create todo
 app.post("/todos", async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, completed, category, createdAt } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: "Title is required" });
@@ -55,8 +55,9 @@ app.post("/todos", async (req, res) => {
     const todo = {
       title: title.trim(),
       description: description ? description.trim() : "",
-      completed: false,
-      createdAt: new Date().toISOString(), // Use regular timestamp for now
+      completed: completed,
+      category: category,
+      createdAt: createdAt,
     };
 
     console.log("Creating todo:", todo);
@@ -150,6 +151,8 @@ app.delete("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const todoRef = db.collection(todosCollection).doc(id);
+    //or check if a todo with "id" field that equates iq 
+    
     const todoDoc = await todoRef.get();
 
     if (!todoDoc.exists) {
@@ -174,5 +177,5 @@ exports.api = functions.https.onRequest(
     maxInstances: 10,
     invoker: "public", // Allow unauthenticated access
   },
-  app,
+  app
 );
