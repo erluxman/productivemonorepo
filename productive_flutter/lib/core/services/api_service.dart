@@ -6,7 +6,7 @@ import 'package:productive_flutter/models/todo.dart';
 
 class ApiService {
   static const String baseUrl =
-      'http://127.0.0.1:5002/productive-78c0e/us-central1/api';
+      "https://7e342dd81424.ngrok-free.app/productive-78c0e/us-central1/api";
   final http.Client _client;
 
   ApiService({http.Client? client}) : _client = client ?? http.Client();
