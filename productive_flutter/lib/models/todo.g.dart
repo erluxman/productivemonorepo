@@ -43,5 +43,6 @@ const _$TodoCategoryEnumMap = {
   TodoCategory.work: 'work',
   TodoCategory.personal: 'personal',
   TodoCategory.health: 'health',
+  TodoCategory.general: 'general',
   TodoCategory.learning: 'learning',
 };

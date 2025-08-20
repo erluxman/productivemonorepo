@@ -9,6 +9,7 @@ enum TodoCategory {
   work,
   personal,
   health,
+  general,
   learning;
 
   IconData get icon {
@@ -21,6 +22,8 @@ enum TodoCategory {
         return Icons.person;
       case TodoCategory.health:
         return Icons.favorite;
+      case TodoCategory.general:
+        return Icons.home;
       case TodoCategory.learning:
         return Icons.book;
     }
@@ -36,6 +39,8 @@ enum TodoCategory {
         return 'Personal';
       case TodoCategory.health:
         return 'Health';
+      case TodoCategory.general:
+        return 'General';
       case TodoCategory.learning:
         return 'Learning';
     }

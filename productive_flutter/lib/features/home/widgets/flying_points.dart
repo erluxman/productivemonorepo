@@ -59,7 +59,7 @@ class _FlyingPointsState extends State<FlyingPoints>
         weight: 30,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 2.0, end: 0.6),
+        tween: Tween<double>(begin: 2.0, end: 1.0),
         weight: 70,
       ),
     ]).animate(
@@ -72,7 +72,7 @@ class _FlyingPointsState extends State<FlyingPoints>
     _opacityAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.8, 1.0, curve: Curves.easeOut),
+        curve: const Interval(0.8, 1.0, curve: Curves.decelerate),
       ),
     );
 
@@ -96,7 +96,7 @@ class _FlyingPointsState extends State<FlyingPoints>
         final dx = Curves.easeOutQuad.transform(t);
         final horizontalPos = Offset.lerp(
           widget.startPosition,
-          widget.endPosition,
+          widget.endPosition - const Offset(80, 30),
           dx,
         )!;
 
@@ -113,7 +113,7 @@ class _FlyingPointsState extends State<FlyingPoints>
           child: Transform.scale(
             scale: _scaleAnimation.value,
             child: Opacity(
-              opacity: _opacityAnimation.value,
+              opacity: max(min(_opacityAnimation.value * 1.5, 1), 0.7),
               child: Row(
                 children: [
                   Transform.scale(
@@ -121,7 +121,7 @@ class _FlyingPointsState extends State<FlyingPoints>
                     child: Icon(
                       Icons.emoji_events,
                       color: Colors.amber[600],
-                      size: 32,
+                      size: 48,
                     ),
                   ),
                   const SizedBox(width: 4),
