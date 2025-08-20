@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/features/todo/widgets/add_todo_dialog.dart';
-import 'package:productive_flutter/utils/transitions/dialog_transitions.dart';
+import 'package:productive_flutter/core/ui/dialog_transitions.dart';
 
 class AddTodoButton extends StatelessWidget {
   final AnimationController fabAnimationController;

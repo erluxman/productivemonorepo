@@ -7,8 +7,8 @@ import 'package:productive_flutter/features/auth/login_screen.dart';
 import 'package:productive_flutter/features/auth/signup_screen.dart';
 import 'package:productive_flutter/features/home/home_screen.dart';
 import 'package:productive_flutter/features/splash/widgets/login_button.dart';
-import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
-import 'package:productive_flutter/utils/transitions/fade_page_transition.dart';
+import 'package:productive_flutter/core/navigation/navigation_extension.dart';
+import 'package:productive_flutter/core/ui/fade_page_transition.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/todo.dart';
+import '../../models/todo.dart';
 
 class TodoNotifier extends StateNotifier<List<Todo>> {
   TodoNotifier()

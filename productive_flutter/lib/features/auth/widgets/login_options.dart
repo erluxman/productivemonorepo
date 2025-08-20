@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:productive_flutter/features/home/home_screen.dart';
 import 'package:productive_flutter/features/splash/widgets/login_button.dart';
-import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
+import 'package:productive_flutter/core/navigation/navigation_extension.dart';
 
 class LoginOptions extends StatelessWidget {
   const LoginOptions({

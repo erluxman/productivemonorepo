@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/utils/haptics.dart';
+import '../../../utils/haptics.dart';
 
 class LoginButton extends StatelessWidget {
   const LoginButton({

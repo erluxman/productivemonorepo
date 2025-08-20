@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/utils/haptics.dart';
+import '../../../utils/haptics.dart';
 import 'flying_points.dart';
 
 class TodoSuccessDialog extends StatefulWidget {

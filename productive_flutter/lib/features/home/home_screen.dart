@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:productive_flutter/core/theme/app_theme.dart';
 
-import '../../core/providers/points_provider.dart';
+import '../../core/user/points_provider.dart';
 import 'pages/feed_page.dart';
 import 'pages/inbox_page.dart';
 import 'widgets/add_todo_button.dart';

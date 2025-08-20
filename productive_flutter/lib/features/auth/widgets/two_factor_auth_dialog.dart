@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
+import 'package:productive_flutter/core/navigation/navigation_extension.dart';
 
-import '../../../utils/transitions/dialog_transitions.dart';
+import '../../../core/ui/dialog_transitions.dart';
 
 class TwoFactorAuthDialog extends StatefulWidget {
   final Future<bool> Function(String code) onVerify;

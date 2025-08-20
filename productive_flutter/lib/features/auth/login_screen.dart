@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../../core/utils/haptics.dart';
+import '../../utils/haptics.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/splash/splash_screen.dart';
-import '../../providers/auth_provider.dart';
-import '../../utils/extensions/navigation_extension.dart';
+import '../../core/auth/auth_provider.dart';
+import '../../core/navigation/navigation_extension.dart';
 import 'widgets/forget_password_dialog.dart';
 import 'widgets/login_form.dart';
 

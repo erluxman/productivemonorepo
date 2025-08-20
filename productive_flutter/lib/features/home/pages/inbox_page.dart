@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/core/providers/api_provider.dart';
-import 'package:productive_flutter/core/providers/points_provider.dart';
-import 'package:productive_flutter/core/services/sound_service.dart';
+import 'package:productive_flutter/core/todo/todos_provider.dart';
+import 'package:productive_flutter/core/user/points_provider.dart';
+import 'package:productive_flutter/utils/sound_service.dart';
 import 'package:productive_flutter/features/home/widgets/todo_item.dart';
 import 'package:productive_flutter/features/home/widgets/todo_success_dialog.dart';
 import 'package:productive_flutter/features/todo/widgets/add_todo_dialog.dart';

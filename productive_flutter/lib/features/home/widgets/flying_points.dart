@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../core/utils/haptics.dart';
+import '../../../utils/haptics.dart';
 
 class FlyingPoints extends StatefulWidget {
   final Offset startPosition;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/core/providers/points_provider.dart'
+import 'package:productive_flutter/core/user/points_provider.dart'
     as core_points;
 import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/models/todo.dart';
-import 'package:productive_flutter/providers/todo_provider.dart';
+import 'package:productive_flutter/core/todo/todo_provider.dart';
 
-import '../../../core/providers/api_provider.dart';
+import '../../../core/todo/todos_provider.dart';
 import 'todo_form_fields.dart';
 import 'todo_success_step.dart';
 

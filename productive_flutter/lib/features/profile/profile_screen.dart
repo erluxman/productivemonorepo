@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:productive_flutter/features/splash/splash_screen.dart';
-import 'package:productive_flutter/providers/auth_provider.dart';
-import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
+import 'package:productive_flutter/core/auth/auth_provider.dart';
+import 'package:productive_flutter/core/navigation/navigation_extension.dart';
 
 import '../../core/theme/theme_notifier.dart';
 

@@ -4,10 +4,10 @@ import 'package:lottie/lottie.dart';
 import 'package:productive_flutter/features/auth/widgets/signup_form.dart';
 import 'package:productive_flutter/features/home/home_screen.dart';
 import 'package:productive_flutter/features/splash/splash_screen.dart';
-import 'package:productive_flutter/providers/auth_provider.dart';
-import 'package:productive_flutter/utils/extensions/navigation_extension.dart';
+import 'package:productive_flutter/core/auth/auth_provider.dart';
+import 'package:productive_flutter/core/navigation/navigation_extension.dart';
 
-import '../../../core/utils/haptics.dart';
+import '../../utils/haptics.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});

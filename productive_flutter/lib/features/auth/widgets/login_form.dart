@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/utils/haptics.dart';
+import '../../../utils/haptics.dart';
 
 import 'email_field.dart';
 import 'login_options.dart';

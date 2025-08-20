@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:productive_flutter/main.dart';
+import 'package:productive_flutter/app.dart';
 
 void main() {
   testWidgets('App Follows MaterialTheme', (WidgetTester tester) async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/utils/haptics.dart';
-import '../../../utils/transitions/dialog_transitions.dart';
+import '../../../utils/haptics.dart';
+import '../../../core/ui/dialog_transitions.dart';
 
 class ForgotPasswordDialog extends StatefulWidget {
   final Future<bool> Function(String loginId) onSubmit;

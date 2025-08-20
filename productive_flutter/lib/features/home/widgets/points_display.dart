@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/points_provider.dart';
+import '../../../core/user/points_provider.dart';
 import 'animated_points_counter.dart';
 
 class PointsDisplay extends ConsumerStatefulWidget {

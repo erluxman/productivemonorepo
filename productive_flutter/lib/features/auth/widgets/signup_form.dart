@@ -3,7 +3,7 @@ import 'package:productive_flutter/features/auth/widgets/email_field.dart';
 import 'package:productive_flutter/features/auth/widgets/signup_options.dart';
 import 'package:productive_flutter/features/auth/widgets/terms_checkbox.dart';
 
-import '../../../core/utils/haptics.dart';
+import '../../../utils/haptics.dart';
 import 'password_field.dart';
 
 class SignupForm extends StatelessWidget {
