@@ -42,28 +42,23 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     if (_selectedTimeFilter == index) return;
 
     // Start animation based on direction
-    if (index > _selectedTimeFilter) {
-      _tabAnimationController.forward(from: 0.0);
-    } else {
-      _tabAnimationController.reverse(from: 1.0);
-    }
+    // if (index > _selectedTimeFilter) {
+    //   _tabAnimationController.forward(from: 0.0);
+    // } else {
+    //   _tabAnimationController.reverse(from: 1.0);
+    // }
 
     setState(() {
       _selectedTimeFilter = index;
     });
 
     // Animate to the selected page
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    _pageController.jumpToPage(index);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -94,7 +89,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 children: List.generate(_timeFilters.length, (pageIndex) {
                   return Column(
                     children: [
-                      _buildTopThree(timeFilter: pageIndex),
                       Expanded(
                         child: _buildLeaderboardList(timeFilter: pageIndex),
                       ),
@@ -204,36 +198,84 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     switch (timeFilter) {
       case 0: // Weekly
         topUsers = [
-          {'rank': 1, 'image': 'https://picsum.photos/seed/user1/200'},
-          {'rank': 2, 'image': 'https://picsum.photos/seed/user2/200'},
-          {'rank': 3, 'image': 'https://picsum.photos/seed/user3/200'},
+          {
+            'rank': 1,
+            'image': 'https://picsum.photos/seed/user1/200',
+            'name': 'John Doe'
+          },
+          {
+            'rank': 2,
+            'image': 'https://picsum.photos/seed/user2/200',
+            'name': 'Sara Davis'
+          },
+          {
+            'rank': 3,
+            'image': 'https://picsum.photos/seed/user3/200',
+            'name': 'Leonardo Dicaprio'
+          },
         ];
         break;
       case 1: // Monthly
         topUsers = [
-          {'rank': 1, 'image': 'https://picsum.photos/seed/user4/200'},
-          {'rank': 2, 'image': 'https://picsum.photos/seed/user5/200'},
-          {'rank': 3, 'image': 'https://picsum.photos/seed/user6/200'},
+          {
+            'rank': 1,
+            'image': 'https://picsum.photos/seed/user4/200',
+            'name': "Rajesh"
+          },
+          {
+            'rank': 2,
+            'image': 'https://picsum.photos/seed/user5/200',
+            'name': 'John Doe'
+          },
+          {
+            'rank': 3,
+            'image': 'https://picsum.photos/seed/user6/200',
+            'name': 'Harry Davis'
+          },
         ];
         break;
       case 2: // All Time
         topUsers = [
-          {'rank': 1, 'image': 'https://picsum.photos/seed/user7/200'},
-          {'rank': 2, 'image': 'https://picsum.photos/seed/user8/200'},
-          {'rank': 3, 'image': 'https://picsum.photos/seed/user9/200'},
+          {
+            'rank': 1,
+            'image': 'https://picsum.photos/seed/user7/200',
+            'name': 'Priyanka Sharma'
+          },
+          {
+            'rank': 2,
+            'image': 'https://picsum.photos/seed/user8/200',
+            'name': 'John Doe'
+          },
+          {
+            'rank': 3,
+            'image': 'https://picsum.photos/seed/user9/200',
+            'name': 'Salman Khan'
+          },
         ];
         break;
       default:
         topUsers = [
-          {'rank': 1, 'image': 'https://picsum.photos/seed/user1/200'},
-          {'rank': 2, 'image': 'https://picsum.photos/seed/user2/200'},
-          {'rank': 3, 'image': 'https://picsum.photos/seed/user3/200'},
+          {
+            'rank': 1,
+            'image': 'https://picsum.photos/seed/user1/200',
+            'name': 'John Doe'
+          },
+          {
+            'rank': 2,
+            'image': 'https://picsum.photos/seed/user2/200',
+            'name': 'Sara Davis'
+          },
+          {
+            'rank': 3,
+            'image': 'https://picsum.photos/seed/user3/200',
+            'name': 'Leonardo Dicaprio'
+          },
         ];
     }
 
     return SizedBox(
       key: key ?? ValueKey<String>('top_three_$timeFilter'),
-      height: 200,
+      height: 230,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -245,6 +287,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               rank: 3,
               borderColor: Theme.of(context).colorScheme.tertiary,
               size: 80,
+              name: topUsers[2]['name'] as String,
             ),
           ),
           Positioned(
@@ -255,6 +298,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               borderColor: Colors.amber,
               size: 120,
               showCrown: true,
+              name: topUsers[0]['name'] as String,
             ),
           ),
           Positioned(
@@ -265,6 +309,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               rank: 2,
               borderColor: Theme.of(context).colorScheme.secondary,
               size: 80,
+              name: topUsers[1]['name'] as String,
             ),
           ),
         ],
@@ -278,6 +323,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     required Color borderColor,
     required double size,
     bool showCrown = false,
+    required String name,
   }) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -355,6 +401,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 ),
               ),
           ],
+        ),
+        SizedBox(
+          width: size * 0.8,
+          child: Text(
+            name,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
@@ -516,72 +573,77 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
       ),
       itemBuilder: (context, index) {
         final data = leaderboardData[index];
-        return ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          leading: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Theme.of(context).colorScheme.primary,
-                width: 2,
-              ),
-            ),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: data['image'] as String,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: SizedBox(
-                      width: 15,
-                      height: 15,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+        return Column(
+          children: [
+            if (index == 0) _buildTopThree(timeFilter: timeFilter),
+            ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              leading: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: data['image'] as String,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
                       ),
                     ),
+                    errorWidget: (context, url, error) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                    ),
+                    memCacheHeight: 100,
+                    memCacheWidth: 100,
+                    maxHeightDiskCache: 100,
+                    maxWidthDiskCache: 100,
                   ),
                 ),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.grey,
-                    size: 20,
-                  ),
-                ),
-                memCacheHeight: 100,
-                memCacheWidth: 100,
-                maxHeightDiskCache: 100,
-                maxWidthDiskCache: 100,
               ),
-            ),
-          ),
-          title: Text(
-            data['name'] as String,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                data['points'].toString(),
+              title: Text(
+                data['name'] as String,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.emoji_events,
-                color: Colors.amber[600],
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    data['points'].toString(),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.emoji_events,
+                    color: Colors.amber[600],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
