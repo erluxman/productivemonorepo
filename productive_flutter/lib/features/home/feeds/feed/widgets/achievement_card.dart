@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
-import 'package:productive_flutter/features/feed/widgets/interaction_buttons.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/interaction_buttons.dart';
 
-class HabitCard extends StatelessWidget {
+class AchievementCard extends StatelessWidget {
   final FeedItem item;
 
-  const HabitCard({
+  const AchievementCard({
     super.key,
     required this.item,
   });
@@ -72,7 +72,7 @@ class HabitCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            // Habit info
+            // Achievement info
             Text(
               item.title,
               style: textTheme.titleMedium?.copyWith(
@@ -108,10 +108,21 @@ class HabitCard extends StatelessWidget {
                     color: Colors.grey[600],
                   ),
                 ),
-                Text(
-                  '${item.timeSpent} • ${item.streak} day streak',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withAlpha(26),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${item.points} points',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -122,9 +133,12 @@ class HabitCard extends StatelessWidget {
               reactions: item.reactions,
               comments: item.comments,
               shares: item.shares,
-              onLike: () {},
-              onComment: () {},
-              onShare: () {},
+              onLike: () {
+              },
+              onComment: () {
+              },
+              onShare: () {
+              },
             ),
           ],
         ),

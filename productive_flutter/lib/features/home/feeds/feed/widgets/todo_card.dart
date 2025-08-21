@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
-import 'package:productive_flutter/features/feed/widgets/interaction_buttons.dart';
-import 'package:productive_flutter/features/feed/widgets/todo_progress.dart';
-import 'package:productive_flutter/features/feed/widgets/todo_user_info.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/interaction_buttons.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/todo_progress.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/todo_user_info.dart';
 
 class TodoCard extends StatelessWidget {
   final FeedItem item;

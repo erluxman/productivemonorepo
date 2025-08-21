@@ -12,12 +12,27 @@ Content-Type: application/json
   "description": "make a testing api"
 }
 ### Create a new todo on backend
-POST https://api-z33lyit4hq-uc.a.run.app/todos
+POST {{baseUrl}}/todos
 Content-Type: application/json
 
 {
   "title": "Test task",
-  "description": "make a testing api"
+  "description": "make a testing api",
+  "completed": false,
+  "createdAt": "2023-10-01T12:00:00Z",
+  "category":"general"
+}
+
+### Stripe Proxy
+POST {{baseUrl}}/stripeProxy
+Content-Type: application/json
+
+{
+  "title": "Test task",
+  "description": "make a testing api",
+  "completed": false,
+  "createdAt": "2023-10-01T12:00:00Z",
+  "category":"general"
 }
 
 ### Get all todos

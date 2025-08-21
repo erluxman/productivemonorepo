@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
 
 final feedProvider = FutureProvider<List<FeedItem>>((ref) async {
   final List<dynamic> feedItemsJson = feedData['feedItems'];

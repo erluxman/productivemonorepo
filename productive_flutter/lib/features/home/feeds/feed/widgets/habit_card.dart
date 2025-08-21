@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
-import 'package:productive_flutter/features/feed/widgets/interaction_buttons.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/interaction_buttons.dart';
 
-class FeedCard extends StatelessWidget {
+class HabitCard extends StatelessWidget {
   final FeedItem item;
 
-  const FeedCard({
+  const HabitCard({
     super.key,
     required this.item,
   });
@@ -72,7 +72,7 @@ class FeedCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            // Content
+            // Habit info
             Text(
               item.title,
               style: textTheme.titleMedium?.copyWith(
@@ -85,17 +85,46 @@ class FeedCard extends StatelessWidget {
               style: textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
+            // Progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: item.progress / 100.0,
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  theme.colorScheme.primary,
+                ),
+                minHeight: 8,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Progress info
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${item.progress}% Complete',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                Text(
+                  '${item.timeSpent} • ${item.streak} day streak',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             // Interaction buttons
             InteractionButtons(
               reactions: item.reactions,
               comments: item.comments,
               shares: item.shares,
-              onLike: () {
-              },
-              onComment: () {
-              },
-              onShare: () {
-              },
+              onLike: () {},
+              onComment: () {},
+              onShare: () {},
             ),
           ],
         ),

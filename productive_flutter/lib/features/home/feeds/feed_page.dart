@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
-import 'package:productive_flutter/features/feed/providers/feed_provider.dart';
-import 'package:productive_flutter/features/feed/widgets/achievement_card.dart';
-import 'package:productive_flutter/features/feed/widgets/feed_card.dart';
-import 'package:productive_flutter/features/feed/widgets/habit_card.dart';
-import 'package:productive_flutter/features/feed/widgets/todo_card.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/providers/feed_provider.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/achievement_card.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/feed_card.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/habit_card.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/todo_card.dart';
 
 class FeedPage extends ConsumerWidget {
   const FeedPage({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:productive_flutter/features/feed/widgets/streak_content.dart';
-import 'package:productive_flutter/features/feed/widgets/streak_user_info.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/streak_content.dart';
+import 'package:productive_flutter/features/home/feeds/feed/widgets/streak_user_info.dart';
 
 class StreakCard extends StatelessWidget {
   final String username;

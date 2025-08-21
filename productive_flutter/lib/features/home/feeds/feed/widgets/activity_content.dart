@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
 
 class ActivityContent extends StatelessWidget {
   final ActivityType activityType;

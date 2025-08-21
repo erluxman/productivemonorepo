@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:productive_flutter/core/theme/app_theme.dart';
 
 import '../../core/user/points_provider.dart';
-import 'pages/feed_page.dart';
-import 'pages/inbox_page.dart';
-import 'widgets/add_todo_button.dart';
-import 'widgets/bottom_nav_bar.dart';
-import 'widgets/top_bar.dart';
+import 'feeds/feed_page.dart';
+import 'inbox/inbox_page.dart';
+import 'inbox/widgets/add_todo_button.dart';
+import 'inbox/widgets/bottom_nav_bar.dart';
+import 'inbox/widgets/top_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

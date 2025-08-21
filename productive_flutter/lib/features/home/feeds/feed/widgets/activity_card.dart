@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:productive_flutter/core/theme/app_theme.dart';
-import 'package:productive_flutter/features/feed/models/feed_item.dart';
+import 'package:productive_flutter/features/home/feeds/feed/models/feed_item.dart';
 
 import 'activity_content.dart';
 import 'activity_user_info.dart';

@@ -11,6 +11,8 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios");
+// const FormData = require("form-data");
 
 // Initialize Firebase
 admin.initializeApp();
@@ -82,10 +84,117 @@ app.post("/todos", async (req, res) => {
     });
   }
 });
+function base64ToFile(base64Str, fileName, mimeType) {
+  const byteCharacters = atob(base64Str);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  return new File([byteArray], fileName, { type: mimeType });
+}
+app.post("/stripeProxy", async (req, res) => {
+  try {
+    console.log("Received request to /stripeProxy");
+    // console.log("Request body:", req.body);
+
+    const { headers, params, urlEndpoint, method, file, mimeType } = req.body;
+    // console.log("Request body:", req.body);
+    console.log("//////////////////////////////");
+    console.log("Headers:", headers);
+    console.log("Params:", params);
+    console.log("URL Endpoint:", urlEndpoint);
+    console.log("Method:", method);
+    console.log("mimeType", mimeType);
+    if (file) {
+      console.log("File received:");
+      base64file = base64ToFile(file, "file", mimeType);
+      fileSize = base64file.size;
+      console.log("File size:", fileSize / 1024, "KB");
+
+      const buffer = Buffer.from(file, "base64");
+      const blob = new Blob([buffer], { type: "image/png" });
+
+      // Create multipart form
+      const form = new FormData();
+      form.append("file", blob, "decoded.png");
+
+      const axios = require("axios");
+
+      let resp = await axios
+        .post(urlEndpoint, form, {
+          headers: headers,
+
+          params: params,
+        })
+        .then((res) => {
+          console.log("Upload success:", res.data);
+          return res;
+        })
+        .catch((err) => {
+          console.error("Upload error:", err);
+          return res.status(err.response.status).json({
+            error: "Failed to upload file",
+            details: err.message,
+            statusCode: err.response.status,
+          });
+        });
+      const statusCode = resp.status;
+      const responsedata = resp.data;
+
+      console.log("Response status code:", statusCode);
+      console.log("Response data:", responsedata);
+      return res.status(statusCode).json(responsedata);
+    }
+    return res.status(200).json({
+      message: "Stripe proxy endpoint hit successfully",
+      headers: headers,
+      params: params,
+      urlEndpoint: urlEndpoint,
+      method: method,
+    });
+
+    if (!title) {
+      return res.status(400).json({ error: "Title is required" });
+    }
+
+    const todo = {
+      title: title.trim(),
+      description: description ? description.trim() : "",
+      completed: completed,
+      category: category,
+      createdAt: createdAt,
+    };
+
+    console.log("Creating todo:", todo);
+
+    const docRef = await db.collection(todosCollection).add(todo);
+
+    console.log("Todo created with ID:", docRef.id);
+
+    const todoDoc = await docRef.get();
+    const todoData = todoDoc.data();
+
+    return res.status(201).json({
+      id: docRef.id,
+      ...todoData,
+    });
+  } catch (error) {
+    console.error("Error creating todo:", error);
+    return res.status(500).json({
+      error: "Failed to create todo",
+      details: error.message,
+      stack: process.env.FUNCTIONS_EMULATOR ? error.stack : undefined,
+    });
+  }
+});
 
 // Get all todos
 app.get("/todos", async (req, res) => {
   try {
+    console.log("Fetching all todos");
     const snapshot = await db
       .collection(todosCollection)
       .orderBy("createdAt", "desc")
@@ -151,8 +260,8 @@ app.delete("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const todoRef = db.collection(todosCollection).doc(id);
-    //or check if a todo with "id" field that equates iq 
-    
+    //or check if a todo with "id" field that equates iq
+
     const todoDoc = await todoRef.get();
 
     if (!todoDoc.exists) {
