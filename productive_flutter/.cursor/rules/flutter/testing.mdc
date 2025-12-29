@@ -1,10 +1,8 @@
 ---
 description: Flutter testing rules (unit tests, widget tests, integration tests).
 globs:
-  - "flutter_app/test/**"
-  - "flutter_app/lib/**"
-  - "apps/mobile/flutter/test/**"
-  - "apps/mobile/flutter/lib/**"
+  - "test/**"
+  - "lib/**"
 ---
 
 # Flutter: Testing

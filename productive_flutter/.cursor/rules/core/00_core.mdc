@@ -9,7 +9,7 @@ globs:
 
 - These rules are **hard constraints**. If you must break one, **stop and ask the Project Owner for permission**.
 - Treat the user as **Project Owner** who understands goals but may not know implementation details. **Do not guess requirements.**
-- Follow `project_constitution.md` (architecture) and `workflow_protocol.md` (process).
+- Follow `ai-dev/DEVELOPMENT_GUIDE.md` (architecture) and `ai-dev/layout_conventions.md` (project structure).
 - No business logic in UI / presentation code.
 - No hardcoded secrets, tokens, API keys, or base URLs in source.
 - Errors must be handled (no silent failures).

@@ -1,8 +1,7 @@
 ---
 description: Flutter performance optimization rules (build optimization, const constructors, efficient rendering).
 globs:
-  - "flutter_app/lib/presentation/**"
-  - "apps/mobile/flutter/lib/presentation/**"
+  - "lib/**"
 ---
 
 # Flutter: Performance
@@ -21,7 +20,7 @@ globs:
 class TodoItem extends StatelessWidget {
   const TodoItem({required this.title, super.key});
   final String title;
-  
+
   @override
   Widget build(BuildContext context) {
     return Text(title);
@@ -53,6 +52,6 @@ ListView(
 
 ## State Management
 
-- Keep state management in `presentation/state/`, not in widgets.
+- Keep state management in `lib/core/` or feature-specific providers, not in widgets.
 - Use Riverpod or BLoC for complex state; avoid `setState` for app-wide state.
 - Minimize rebuilds by using `select` or `watch` selectively in Riverpod.

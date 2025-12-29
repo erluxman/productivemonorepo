@@ -2,61 +2,82 @@
 
 This guide describes how Flutter work is organized and how rules apply.
 
-## Root (canonical)
+## Project Root
 
-- **Use this root everywhere**: `apps/mobile/flutter/`
-- Implementation detail in this repo: `apps/mobile/flutter/` → `flutter_app/` (symlink managed by `scripts/platform_paths.json`)
+This is a standalone Flutter application at the repository root.
 
-## Code layout (recommended)
-
-This layout is aligned with `project_constitution.md` and designed to trigger the right scoped rules:
-
-Recommended “from day 1” layout:
+## Code Layout
 
 ```text
-apps/mobile/flutter/
-  lib/
-    core/
-      domain/
-      application/
-    infrastructure/
-    presentation/
-      screens/
-      widgets/
-      state/
-      navigation/
+lib/
+  core/                   # Core services, providers, shared infrastructure
+    auth/                 # Authentication services
+    navigation/           # Navigation extensions
+    theme/                # Theme and styling
+    todo/                 # Todo services and providers
+    ui/                   # Shared UI components
+    user/                 # User-related providers
+  features/               # Feature-based organization
+    auth/                 # Authentication screens
+    home/                 # Home and inbox features
+    leaderboard/          # Leaderboard feature
+    profile/              # Profile feature
+    splash/               # Splash screen
+    todo/                 # Todo-specific widgets
+  models/                 # Data models
+  utils/                  # Utility functions
+    extensions/           # Dart extensions
+  app.dart                # App widget
+  firebase_options.dart   # Firebase configuration
+  main.dart               # Entry point
+
+test/                     # Tests
+  unit_test.dart
+  widget_test.dart
 ```
 
-## Cursor rule mapping
+## Cursor Rule Mapping
 
-- Always-on:
-  - `.cursor/rules/core/*`
-- Scoped Flutter rules (by concern):
-  - `.cursor/rules/mobile/flutter/state_bloc.mdc`
-  - `.cursor/rules/mobile/flutter/state_riverpod.mdc`
-  - `.cursor/rules/mobile/flutter/ui_widgets.mdc`
-  - `.cursor/rules/mobile/flutter/navigation.mdc`
-  - `.cursor/rules/mobile/flutter/networking.mdc`
-  - `.cursor/rules/mobile/flutter/auth.mdc`
-  - `.cursor/rules/mobile/flutter/animations.mdc`
-  - `.cursor/rules/mobile/flutter/performance.mdc`
-  - `.cursor/rules/mobile/flutter/error_handling.mdc`
-  - `.cursor/rules/mobile/flutter/accessibility.mdc`
-  - `.cursor/rules/mobile/flutter/testing.mdc`
+### Always-On Rules
 
-## Rule intent
+- `.cursor/rules/core/*.mdc` - Core constraints, workflow, security
 
-- BLoC/Riverpod rules only load when editing state files.
-- Auth/animation rules only load when editing auth/animation code.
-- Performance rules apply to presentation layer (widgets, screens).
-- Error handling rules apply to all layers.
-- Accessibility rules only load when editing presentation layer.
-- Testing rules apply to test files.
+### Flutter-Specific Rules (Auto-load for `lib/**`)
 
-## Path→Rule alignment (why this layout matters)
+- `.cursor/rules/flutter/00_scope.mdc` - Rule scope definition
+- `.cursor/rules/flutter/common_patterns.mdc` - State, UI, navigation, networking, auth, animations
+- `.cursor/rules/flutter/error_handling.mdc` - Exception handling, error patterns
+- `.cursor/rules/flutter/performance.mdc` - Build optimization, const constructors
+- `.cursor/rules/flutter/accessibility.mdc` - Semantics, screen readers, a11y
+- `.cursor/rules/flutter/testing.mdc` - Unit tests, widget tests, integration tests
 
-Because the layout is layer-first, Cursor can scope rules tightly:
+## Rule Intent
 
-- `lib/presentation/state/**` triggers state rules (BLoC/Riverpod)
-- `lib/presentation/widgets/**` triggers UI widget rules
-- `lib/infrastructure/**` triggers networking/infrastructure rules
+- **Common Patterns**: Covers state management (BLoC/Riverpod/ChangeNotifier), UI composition, navigation, networking, auth flows, and animations
+- **Error Handling**: Apply to all async operations and service calls
+- **Performance**: Apply to all widgets and UI code
+- **Accessibility**: Apply to all interactive UI elements
+- **Testing**: Apply to test files and code requiring test coverage
+
+## Architecture Principles
+
+1. **Separation of Concerns**: No business logic in widgets
+2. **Core vs Features**: Core contains cross-cutting concerns, Features contain domain-specific UI
+3. **State Management**: Use providers/BLoC for state, keep in `core/` for shared state
+4. **Services**: Business logic stays in `core/[concern]/`
+5. **Reusability**: Shared UI components in `core/ui/`, feature-specific in `features/[feature]/`
+
+## Tech Stack
+
+- **Framework**: Flutter
+- **State Management**: Riverpod / BLoC (ChangeNotifier)
+- **Backend**: Firebase (Auth, Firestore)
+- **Error Handling**: Try-catch patterns (moving to fpdart Either)
+- **Testing**: flutter_test, mockito
+
+## Key Files
+
+- `ai-dev/DEVELOPMENT_GUIDE.md` - Quick reference for development
+- `ai-dev/layout_conventions.md` - Detailed structure guide
+- `ai-dev/checklists/CHECKLIST.md` - Pre-commit checklist
+- `ai-dev/checklists/release/flutter.md` - Release checklist

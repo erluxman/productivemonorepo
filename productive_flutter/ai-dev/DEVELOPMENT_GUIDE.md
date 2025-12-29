@@ -9,8 +9,8 @@ Quick reference for AI-assisted Flutter development with Cursor.
 ## 📋 Quick Start
 
 ### Core Rules (Always Active)
-- `.cursor/rules/core/*.mdc` - Core constraints, workflow, security
-- `.cursor/rules/flutter/*.mdc` - Flutter-specific rules (13 files)
+- `.cursor/rules/core/*.mdc` - Core constraints, workflow, security (3 files)
+- `.cursor/rules/flutter/*.mdc` - Flutter-specific rules (6 files)
 
 ### Key Files
 - `ai-dev/DEVELOPMENT_GUIDE.md` - **This file**
@@ -73,19 +73,15 @@ See `ai-dev/layout_conventions.md` for detailed structure.
 
 | Concern | Rule File |
 |---------|-----------|
-| **UI/Widgets** | `.cursor/rules/flutter/ui_widgets.mdc` |
-| **State (BLoC)** | `.cursor/rules/flutter/state_bloc.mdc` |
-| **State (Riverpod)** | `.cursor/rules/flutter/state_riverpod.mdc` |
-| **Navigation** | `.cursor/rules/flutter/navigation.mdc` |
-| **Networking** | `.cursor/rules/flutter/networking.mdc` |
-| **Auth** | `.cursor/rules/flutter/auth.mdc` |
-| **Animations** | `.cursor/rules/flutter/animations.mdc` |
+| **Common Patterns** | `.cursor/rules/flutter/common_patterns.mdc` |
 | **Error Handling** | `.cursor/rules/flutter/error_handling.mdc` |
 | **Testing** | `.cursor/rules/flutter/testing.mdc` |
 | **Performance** | `.cursor/rules/flutter/performance.mdc` |
 | **Accessibility** | `.cursor/rules/flutter/accessibility.mdc` |
 
 Rules auto-load for all files in `lib/**`. See `.cursor/rules/flutter/00_scope.mdc`.
+
+**Note**: The `common_patterns.mdc` covers state management, UI/widgets, navigation, networking, auth, and animations.
 
 ---
 

@@ -1,6 +1,6 @@
 # Prompt: Feature Spec
 
-@project_constitution.md @workflow_protocol.md
+@ai-dev/DEVELOPMENT_GUIDE.md @ai-dev/layout_conventions.md
 
 Write a 10-line spec using this format:
 
@@ -27,6 +27,6 @@ Shall have integration test in browser
 
 **Feature**: Todo Management Application  
 **Purpose**: Allow users to manage their todos by creating, editing, deleting, and toggling completion status  
-**Behavior**: Responsive web application that displays a list of todos with ability to add new todos, edit existing ones, delete todos, and toggle completion status; todos persist across page refreshes  
-**Constraints**: Must follow Hexagonal Architecture (domain/application/infrastructure/presentation layers), no business logic in UI components, use Zustand or Redux Toolkit for state management, follow React component conventions from .cursor/rules, no hardcoded values, all errors must be handled  
-**Acceptance Criteria**: User can create/edit/delete/toggle todos, UI follows Material Design, responsive, todos persist in localStorage, proper error handling, unit/UI/integration tests
+**Behavior**: Flutter mobile application that displays a list of todos with ability to add new todos, edit existing ones, delete todos, and toggle completion status; todos persist in Firestore  
+**Constraints**: No business logic in widgets, services in lib/core/, state management via BLoC/Riverpod/ChangeNotifier, follow Flutter conventions from .cursor/rules, no hardcoded values, all errors must be handled  
+**Acceptance Criteria**: User can create/edit/delete/toggle todos, UI follows Material Design, responsive, todos persist in Firestore, proper error handling, unit/widget/integration tests

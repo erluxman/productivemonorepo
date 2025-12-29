@@ -1,8 +1,7 @@
 ---
 description: Flutter accessibility rules (semantics, screen readers, a11y support).
 globs:
-  - "flutter_app/lib/presentation/**"
-  - "apps/mobile/flutter/lib/presentation/**"
+  - "lib/**"
 ---
 
 # Flutter: Accessibility

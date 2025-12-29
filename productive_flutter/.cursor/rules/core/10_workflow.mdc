@@ -14,12 +14,10 @@ globs:
 
 ## Mandatory gates (apply to every change)
 
-- Before marking work “done”, consult:
-  - `ai-dev/checklists/code_review_checklist.md`
-  - `ai-dev/checklists/security_checklist.md`
-  - `ai-dev/checklists/testing_checklist.md`
-- If you violate a hard constraint with explicit approval, log it in `ai-dev/exceptions_log.md`.
-- If you take a shortcut for speed, record it in `ai-dev/tech_debt_ledger.md` with a paydown plan.
+- Before marking work "done", consult:
+  - `ai-dev/checklists/CHECKLIST.md` (covers code review, security, and testing)
+- If you violate a hard constraint with explicit approval, document it in commit message or create `ai-dev/exceptions_log.md`.
+- If you take a shortcut for speed, document it in commit message or create `ai-dev/tech_debt_ledger.md` with a paydown plan.
 
 ## Pre-ship gate (apply before releases only)
 

@@ -1,8 +1,7 @@
 ---
 description: Flutter error handling rules (exception handling, Result types, user-friendly errors).
 globs:
-  - "flutter_app/lib/**"
-  - "apps/mobile/flutter/lib/**"
+  - "lib/**"
 ---
 
 # Flutter: Error Handling
@@ -44,7 +43,7 @@ class CreateTodoUseCase {
     if (params.title.trim().isEmpty) {
       return Left(ValidationError('Title is required'));
     }
-    
+
     try {
       final todo = await repository.create(params);
       return Right(todo);
@@ -63,9 +62,9 @@ class CreateTodoUseCase {
 // In widgets or state management
 Future<void> handleCreate() async {
   setState(() => isLoading = true);
-  
+
   final result = await createTodoUseCase.execute(params);
-  
+
   result.fold(
     (error) {
       // Handle error

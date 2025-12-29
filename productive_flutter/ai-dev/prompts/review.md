@@ -1,9 +1,7 @@
 # Prompt: Code Review (Structured)
 
-@project_constitution.md @workflow_protocol.md
-@ai-dev/checklists/code_review_checklist.md
-@ai-dev/checklists/security_checklist.md
-@ai-dev/checklists/testing_checklist.md
+@ai-dev/DEVELOPMENT_GUIDE.md @ai-dev/layout_conventions.md
+@ai-dev/checklists/CHECKLIST.md
 
 Review target:
 

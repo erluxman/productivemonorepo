@@ -1,7 +1,7 @@
 # Prompt: TDD Bugfix (Repro → Fix → Regression)
 
-@project_constitution.md @workflow_protocol.md
-@ai-dev/checklists/testing_checklist.md
+@ai-dev/DEVELOPMENT_GUIDE.md @ai-dev/layout_conventions.md
+@ai-dev/checklists/CHECKLIST.md
 
 Bug report:
 
