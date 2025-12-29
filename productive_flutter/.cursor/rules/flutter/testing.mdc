@@ -1,0 +1,205 @@
+---
+description: Flutter testing rules (unit tests, widget tests, integration tests).
+globs:
+  - "flutter_app/test/**"
+  - "flutter_app/lib/**"
+  - "apps/mobile/flutter/test/**"
+  - "apps/mobile/flutter/lib/**"
+---
+
+# Flutter: Testing
+
+- Non-trivial logic must have tests.
+- Bug fixes require a repro test that fails before the fix.
+- Prefer tests that assert behavior, not implementation details.
+- Domain layer: 100% coverage target.
+- Application layer: 80% coverage target.
+- Infrastructure layer: 70% coverage target.
+- Presentation layer: 60% coverage target.
+
+## Test Structure
+
+```text
+test/
+├── unit/
+│   ├── domain/
+│   ├── application/
+│   └── infrastructure/
+├── widget/
+│   └── presentation/
+└── integration/
+    └── e2e/
+```
+
+## Unit Tests
+
+```dart
+// test/unit/application/use_cases/create_todo_use_case_test.dart
+import 'package:fpdart/fpdart.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('CreateTodoUseCase', () {
+    test('should create todo with valid input', () async {
+      // Arrange
+      final repository = MockTodoRepository();
+      final useCase = CreateTodoUseCase(repository);
+      when(repository.create(any)).thenAnswer((_) async => TodoEntity(...));
+
+      // Act
+      final result = await useCase.execute(
+        CreateTodoParams(title: 'Test Todo'),
+      );
+
+      // Assert
+      expect(result.isRight(), true);
+      result.fold(
+        (error) => fail('Expected success but got error: $error'),
+        (todo) => expect(todo.title, 'Test Todo'),
+      );
+      verify(repository.create(any)).called(1);
+    });
+
+    test('should fail when title is empty', () async {
+      // Arrange
+      final useCase = CreateTodoUseCase(MockTodoRepository());
+
+      // Act
+      final result = await useCase.execute(
+        CreateTodoParams(title: ''),
+      );
+
+      // Assert
+      expect(result.isLeft(), true);
+      result.fold(
+        (error) => expect(error, isA<ValidationError>()),
+        (todo) => fail('Expected error but got success: $todo'),
+      );
+    });
+  });
+}
+```
+
+## Widget Tests
+
+```dart
+// test/widget/presentation/widgets/todo_item_test.dart
+void main() {
+  testWidgets('TodoItem displays title', (tester) async {
+    // Arrange
+    const todo = TodoEntity(id: '1', title: 'Test Todo');
+
+    // Act
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: TodoItem(todo: todo),
+        ),
+      ),
+    );
+
+    // Assert
+    expect(find.text('Test Todo'), findsOneWidget);
+  });
+}
+```
+
+## Integration Tests
+
+```dart
+// test/integration/e2e/todo_feature_test.dart
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('user can create and view todos', (tester) async {
+    // Arrange
+    await tester.pumpWidget(const MyApp());
+
+    // Act: Create todo
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.enterText(find.byType(TextField), 'New Todo');
+    await tester.tap(find.text('Create'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.text('New Todo'), findsOneWidget);
+  });
+}
+```
+
+## Golden/Snapshot Testing
+
+Golden tests (also called snapshot tests) capture the visual representation of widgets and compare them against reference images to detect unintended UI changes.
+
+```dart
+// test/widget/presentation/widgets/todo_item_golden_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
+
+void main() {
+  group('TodoItem Golden Tests', () {
+    testGoldens('TodoItem renders correctly', (tester) async {
+      // Arrange
+      const todo = TodoEntity(
+        id: '1',
+        title: 'Test Todo',
+        isCompleted: false,
+      );
+
+      // Act
+      await tester.pumpWidgetBuilder(
+        TodoItem(todo: todo),
+        surfaceSize: const Size(400, 100),
+      );
+
+      // Assert: Compare against golden file
+      await screenMatchesGolden(tester, 'todo_item');
+    });
+
+    testGoldens('TodoItem completed state', (tester) async {
+      const todo = TodoEntity(
+        id: '1',
+        title: 'Completed Todo',
+        isCompleted: true,
+      );
+
+      await tester.pumpWidgetBuilder(
+        TodoItem(todo: todo),
+        surfaceSize: const Size(400, 100),
+      );
+
+      await screenMatchesGolden(tester, 'todo_item_completed');
+    });
+  });
+}
+```
+
+### Running Golden Tests
+
+```bash
+# Generate/update golden files
+flutter test --update-goldens
+
+# Run golden tests (compares against existing goldens)
+flutter test
+
+# Run specific golden test
+flutter test test/widget/presentation/widgets/todo_item_golden_test.dart
+```
+
+### Golden Test Best Practices
+
+- Use `golden_toolkit` package for golden testing utilities.
+- Test different states (loading, success, error, empty).
+- Test different screen sizes and themes (light/dark).
+- Store golden files in `test/goldens/` directory.
+- Commit golden files to version control.
+- Review golden diffs carefully when they change.
+
+## Test Best Practices
+
+- Use `mockito` or `mocktail` for mocking.
+- Use `golden_toolkit` for golden/snapshot tests (UI visual regression).
+- Test error states and edge cases.
+- Keep tests fast and independent.
+- Use `fpdart` Either types in tests to match production code patterns.

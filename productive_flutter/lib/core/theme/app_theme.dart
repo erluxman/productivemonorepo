@@ -35,7 +35,7 @@ class AppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         elevation: 8,
       ),
-      bottomAppBarTheme: const BottomAppBarTheme(
+      bottomAppBarTheme: const BottomAppBarThemeData(
         elevation: 8,
         shadowColor: Colors.black,
       ),
@@ -74,7 +74,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(fabBorderRadiusSmall),
         ),
       ),
-      bottomAppBarTheme: const BottomAppBarTheme(
+      bottomAppBarTheme: const BottomAppBarThemeData(
         elevation: 16,
         shadowColor: Colors.black,
       ),

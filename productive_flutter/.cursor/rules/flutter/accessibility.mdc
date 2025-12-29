@@ -1,0 +1,76 @@
+---
+description: Flutter accessibility rules (semantics, screen readers, a11y support).
+globs:
+  - "flutter_app/lib/presentation/**"
+  - "apps/mobile/flutter/lib/presentation/**"
+---
+
+# Flutter: Accessibility
+
+- All interactive elements must be accessible to screen readers.
+- Provide semantic labels for widgets using `Semantics` widget.
+- Support dynamic text scaling (use `MediaQuery.textScaleFactor`).
+- Ensure sufficient color contrast (WCAG AA minimum).
+- Test with screen readers (TalkBack on Android, VoiceOver on iOS).
+
+## Semantic Labels
+
+```dart
+// ✅ GOOD: Semantic label for screen readers
+Semantics(
+  label: 'Create new todo',
+  button: true,
+  child: IconButton(
+    icon: const Icon(Icons.add),
+    onPressed: () => _createTodo(),
+  ),
+)
+
+// ✅ GOOD: Explicit label for form fields
+TextField(
+  decoration: const InputDecoration(
+    labelText: 'Todo title',
+    hintText: 'Enter todo title',
+  ),
+  // Flutter automatically provides semantic label from decoration
+)
+```
+
+## Dynamic Text Scaling
+
+```dart
+// ✅ GOOD: Respect text scaling
+Text(
+  'Todo title',
+  style: TextStyle(
+    fontSize: 16 * MediaQuery.of(context).textScaleFactor,
+  ),
+)
+
+// ✅ BETTER: Use theme text styles that respect scaling automatically
+Text(
+  'Todo title',
+  style: Theme.of(context).textTheme.bodyLarge,
+)
+```
+
+## Color Contrast
+
+- Use theme colors that meet WCAG AA contrast ratios.
+- Test with accessibility tools (Flutter DevTools accessibility inspector).
+- Never rely solely on color to convey information.
+
+## Interactive Elements
+
+```dart
+// ✅ GOOD: Accessible button with proper semantics
+Semantics(
+  label: 'Delete todo',
+  button: true,
+  enabled: true,
+  child: IconButton(
+    icon: const Icon(Icons.delete),
+    onPressed: canDelete ? () => _deleteTodo() : null,
+  ),
+)
+```

@@ -1,0 +1,14 @@
+# Exclude archive directory from Cursor context
+# Archive contains historical documents not needed for active development
+ai-dev/archive/
+
+# Exclude build artifacts
+build/
+*.lock
+
+# Exclude platform-specific build directories
+ios/Pods/
+android/.gradle/
+android/app/build/
+macos/Pods/
+

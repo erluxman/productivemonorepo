@@ -1,0 +1,107 @@
+---
+description: Flutter error handling rules (exception handling, Result types, user-friendly errors).
+globs:
+  - "flutter_app/lib/**"
+  - "apps/mobile/flutter/lib/**"
+---
+
+# Flutter: Error Handling
+
+- Use `fpdart` Either pattern for use cases and application layer operations.
+- Never throw exceptions from use cases; return `Either<Error, T>` instead.
+- Map Either types to UI state (loading, success, error) in presentation layer.
+- Handle all async operations with proper error handling and user feedback.
+- Log errors appropriately; never log sensitive data.
+
+## fpdart Either Pattern
+
+```dart
+// Add to pubspec.yaml:
+// dependencies:
+//   fpdart: ^1.1.1
+
+import 'package:fpdart/fpdart.dart';
+
+// Define error types
+sealed class AppError {
+  const AppError();
+}
+
+class ValidationError extends AppError {
+  final String message;
+  const ValidationError(this.message);
+}
+
+class NetworkError extends AppError {
+  final String message;
+  const NetworkError(this.message);
+}
+
+// Usage in use cases
+class CreateTodoUseCase {
+  Future<Either<AppError, TodoEntity>> execute(CreateTodoParams params) async {
+    // Validation
+    if (params.title.trim().isEmpty) {
+      return Left(ValidationError('Title is required'));
+    }
+    
+    try {
+      final todo = await repository.create(params);
+      return Right(todo);
+    } on NetworkException catch (e) {
+      return Left(NetworkError('Network error: ${e.message}'));
+    } catch (e) {
+      return Left(NetworkError('Failed to create todo: ${e.toString()}'));
+    }
+  }
+}
+```
+
+## Presentation Layer Handling
+
+```dart
+// In widgets or state management
+Future<void> handleCreate() async {
+  setState(() => isLoading = true);
+  
+  final result = await createTodoUseCase.execute(params);
+  
+  result.fold(
+    (error) {
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+      setState(() => isLoading = false);
+    },
+    (todo) {
+      // Handle success
+      todos.add(todo);
+      setState(() => isLoading = false);
+    },
+  );
+}
+
+// Or using pattern matching (Dart 3.0+)
+result.match(
+  (error) => _handleError(error),
+  (todo) => _handleSuccess(todo),
+);
+```
+
+## Async Error Handling
+
+```dart
+// ✅ GOOD: Proper error handling
+try {
+  final data = await repository.fetchTodos();
+  // Handle success
+} on NetworkException catch (e) {
+  // Handle network error
+} on ServerException catch (e) {
+  // Handle server error
+} catch (e) {
+  // Handle unexpected error
+  logError(e);
+}
+```

@@ -1,0 +1,58 @@
+---
+description: Flutter performance optimization rules (build optimization, const constructors, efficient rendering).
+globs:
+  - "flutter_app/lib/presentation/**"
+  - "apps/mobile/flutter/lib/presentation/**"
+---
+
+# Flutter: Performance
+
+- Use `const` constructors wherever possible to avoid unnecessary rebuilds.
+- Prefer `final` over `var`; use `late` only when necessary.
+- Minimize widget rebuilds by splitting large widgets into smaller, const widgets.
+- Use `ListView.builder` or `ListView.separated` for long lists (lazy loading).
+- Avoid calling `setState` in build methods; use state management instead.
+- Profile with Flutter DevTools to identify performance bottlenecks.
+
+## Const Constructors
+
+```dart
+// ✅ GOOD: const constructor
+class TodoItem extends StatelessWidget {
+  const TodoItem({required this.title, super.key});
+  final String title;
+  
+  @override
+  Widget build(BuildContext context) {
+    return Text(title);
+  }
+}
+
+// ❌ BAD: non-const constructor causes unnecessary rebuilds
+class TodoItem extends StatelessWidget {
+  TodoItem({required this.title, super.key});
+  final String title;
+  // ...
+}
+```
+
+## List Optimization
+
+```dart
+// ✅ GOOD: Lazy loading with ListView.builder
+ListView.builder(
+  itemCount: todos.length,
+  itemBuilder: (context, index) => TodoItem(todo: todos[index]),
+)
+
+// ❌ BAD: Creates all widgets at once
+ListView(
+  children: todos.map((todo) => TodoItem(todo: todo)).toList(),
+)
+```
+
+## State Management
+
+- Keep state management in `presentation/state/`, not in widgets.
+- Use Riverpod or BLoC for complex state; avoid `setState` for app-wide state.
+- Minimize rebuilds by using `select` or `watch` selectively in Riverpod.

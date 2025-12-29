@@ -1,0 +1,30 @@
+---
+description: Flutter rules - auto-loads for all Flutter code
+globs:
+  - "lib/**"
+---
+
+# Flutter Development Rules
+
+## Project Structure
+
+- `lib/core/` - Services, providers, shared infrastructure
+- `lib/features/` - Feature-based UI organization
+- `lib/models/` - Data models
+- `lib/utils/` - Utilities and extensions
+
+## Active Rules
+
+- `common_patterns.mdc` - State, UI, navigation, networking, auth, animations
+- `performance.mdc` - Build optimization, const constructors, efficient rendering
+- `error_handling.mdc` - Exception handling, error patterns
+- `accessibility.mdc` - Semantics, screen readers, a11y support
+- `testing.mdc` - Unit tests, widget tests, integration tests
+
+## Core Principles
+
+- No business logic in widgets
+- Services in `lib/core/`, UI in `lib/features/`
+- Handle all errors explicitly
+- Use const constructors where possible
+- Keep files focused and cohesive

@@ -1,0 +1,13 @@
+---
+description: Security red-lines that require explicit approval to deviate from.
+alwaysApply: true
+globs:
+  - "**/*"
+---
+
+# Security (Hard Constraints)
+
+- Never hardcode secrets (keys, tokens, passwords). Use environment/config mechanisms.
+- Never weaken authentication/authorization without explicit approval.
+- Validate/sanitize **all** external input at the boundary (API endpoints, storage reads, deep links).
+- Never log sensitive data (tokens, passwords, PII). If uncertain, redact.

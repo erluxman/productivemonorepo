@@ -1,0 +1,30 @@
+name: Flutter CI/CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: flutter-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Flutter tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.1" # Specify your Flutter version
+
+      - name: Run unit tests
+        run: sh scripts/run_unit_tests.sh

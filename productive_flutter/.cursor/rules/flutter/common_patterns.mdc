@@ -1,0 +1,71 @@
+---
+description: Common Flutter patterns (state, UI, navigation, networking, auth, animations)
+globs:
+  - "lib/**"
+---
+
+# Flutter: Common Patterns
+
+## State Management
+
+### BLoC / ChangeNotifier
+
+- Keep state management in `lib/core/**/providers/` or feature-specific providers
+- No business logic in widgets - keep in services or providers
+- Use notifyListeners() after state changes
+
+### Riverpod (if using)
+
+- Define providers in separate files from widgets
+- Keep provider logic simple, delegate to services
+- Proper disposal and cleanup
+
+## UI & Widgets
+
+### Widget Composition
+
+- Keep widgets focused and single-purpose
+- Extract reusable widgets to `lib/core/ui/` or `lib/features/[feature]/widgets/`
+- Prefer composition over inheritance
+- Use const constructors where possible
+
+### Widget Best Practices
+
+- No business logic in build methods
+- State management through providers/BLoC
+- Keep widget files under 300 lines (split if larger)
+
+## Navigation
+
+- Keep navigation configuration in `lib/core/navigation/`
+- Avoid navigation decisions in domain/application code
+- Use named routes or structured navigation
+- Centralized route definitions
+
+## Networking
+
+- No hardcoded URLs - use configuration/constants
+- Network code in `lib/core/` services, not in UI
+- Handle timeouts and errors explicitly
+- Map network errors to user-friendly messages
+
+## Authentication
+
+- Auth flows are security-sensitive - be explicit
+- Never log tokens or sensitive user data
+- Keep Firebase Auth SDK usage in services, not UI
+- Verify auth state before sensitive operations
+
+## Animations
+
+- Keep animations in UI code only
+- Prefer simple, performant animations
+- Dispose animation controllers properly
+- Avoid heavy animation libraries without justification
+
+## General Guidelines
+
+- Follow Flutter/Dart conventions
+- Use meaningful variable and function names
+- Keep files focused and cohesive
+- Extract complex logic to services

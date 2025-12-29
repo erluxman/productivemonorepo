@@ -1,0 +1,26 @@
+---
+description: Mandatory workflow checkpoints (Spec → Critique → Plan → Execute → Verify).
+alwaysApply: true
+globs:
+  - "**/*"
+---
+
+# Workflow (Hard Constraints)
+
+- For any non-trivial change: **Plan before code**. List files to touch and risks.
+- **Tests are mandatory** for non-trivial logic and for every bugfix (repro test first).
+- Keep changes **atomic** (prefer 1–3 files per step). If scope grows, stop and propose a new plan.
+- After changes: summarize what changed, which files, and what verification was performed.
+
+## Mandatory gates (apply to every change)
+
+- Before marking work “done”, consult:
+  - `ai-dev/checklists/code_review_checklist.md`
+  - `ai-dev/checklists/security_checklist.md`
+  - `ai-dev/checklists/testing_checklist.md`
+- If you violate a hard constraint with explicit approval, log it in `ai-dev/exceptions_log.md`.
+- If you take a shortcut for speed, record it in `ai-dev/tech_debt_ledger.md` with a paydown plan.
+
+## Pre-ship gate (apply before releases only)
+
+- Before shipping/publishing/deploying, consult `ai-dev/checklists/release_checklist.md`.
