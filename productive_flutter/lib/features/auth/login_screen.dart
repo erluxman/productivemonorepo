@@ -3,13 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../utils/haptics.dart';
-import '../../features/home/home_screen.dart';
-import '../../features/splash/splash_screen.dart';
-import '../../core/auth/auth_provider.dart';
+import '../home/home_screen.dart';
+import '../splash/splash_screen.dart';
+import '../../core/auth/providers/auth_provider.dart';
 import '../../core/navigation/navigation_extension.dart';
 import 'widgets/forget_password_dialog.dart';
 import 'widgets/login_form.dart';
 
+/// Login screen refactored to use v2 architecture
+/// Following cursor rules: Handle Either results properly in UI
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -23,12 +25,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isFormValid = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-
-    // Add listeners to validate form
     _loginIdController.addListener(_validateForm);
     _passwordController.addListener(_validateForm);
   }
@@ -54,44 +55,68 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _login() async {
     if (_formKey.currentState?.validate() != true) return;
 
-    final authController = ref.read(authControllerProvider.notifier);
+    setState(() {
+      _isLoading = true;
+    });
+
+    final signInUseCase = ref.read(signInUseCaseProvider);
     final email = _loginIdController.text.trim();
     final password = _passwordController.text;
 
-    // Clear any previous errors
-    authController.clearError();
-
-    final success = await authController.signInWithEmailAndPassword(
+    final result = await signInUseCase.execute(
       email: email,
       password: password,
     );
 
-    if (success && mounted) {
-      // Navigation will be handled automatically by the auth state listener in main.dart
-      // But we can also navigate manually if needed
-      context.navigateToReplacing(const HomeScreen());
-    } else if (mounted) {
-      // Show error message
-      final error = ref.read(authControllerProvider).error;
-      if (error != null) {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    // Handle Either result following cursor rules
+    result.fold(
+      (error) {
+        // Handle error
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(error),
+            content: Text(error.message),
             backgroundColor: Colors.red,
           ),
         );
-      }
-    }
+      },
+      (userCredential) {
+        // Handle success - navigation will be handled by auth state listener
+        if (mounted) {
+          context.navigateToReplacing(const HomeScreen());
+        }
+      },
+    );
   }
 
   Future<void> _showForgotPasswordDialog() async {
     if (!mounted) return;
 
+    final sendPasswordResetUseCase = ref.read(sendPasswordResetUseCaseProvider);
+    
     final result = await ForgotPasswordDialog.show(
       context,
       onSubmit: (email) async {
-        final authController = ref.read(authControllerProvider.notifier);
-        return await authController.sendPasswordResetEmail(email);
+        final resetResult = await sendPasswordResetUseCase.execute(email);
+        return resetResult.fold(
+          (error) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(error.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            return false;
+          },
+          (_) => true,
+        );
       },
     );
 
@@ -109,7 +134,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -149,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 formKey: _formKey,
                 loginIdController: _loginIdController,
                 passwordController: _passwordController,
-                isLoading: authState.isLoading,
+                isLoading: _isLoading,
                 isFormValid: _isFormValid,
                 showForgotPasswordDialog: _showForgotPasswordDialog,
                 login: _login,
@@ -161,3 +185,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     );
   }
 }
+

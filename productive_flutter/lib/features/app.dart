@@ -4,11 +4,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/theme/app_theme.dart';
-import 'core/theme/theme_notifier.dart';
-import 'features/home/home_screen.dart';
-import 'features/splash/splash_screen.dart';
-import 'core/auth/auth_provider.dart';
+import '../core/theme/app_theme.dart';
+import '../core/theme/theme_notifier.dart';
+import 'home/home_screen.dart';
+import 'splash/splash_screen.dart';
+import '../core/auth/providers/auth_provider.dart';
 
 class ProductiveApp extends ConsumerWidget {
   const ProductiveApp({super.key});
@@ -24,7 +24,7 @@ class ProductiveApp extends ConsumerWidget {
       scrollBehavior: const AppScrollBehavior(),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode, // Use the theme mode from the provider
+      themeMode: themeMode,
       home: authState.when(
         data: (user) =>
             user != null ? const HomeScreen() : const SplashScreen(),
@@ -54,7 +54,6 @@ class AppScrollBehavior extends MaterialScrollBehavior {
 
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
-    // Use a more responsive and smoother scrolling physics
     return const BouncingScrollPhysics(
       parent: AlwaysScrollableScrollPhysics(),
     );
@@ -66,7 +65,6 @@ class AppScrollBehavior extends MaterialScrollBehavior {
     Widget child,
     ScrollableDetails details,
   ) {
-    // Add scrollbars for better desktop experience
     return Platform.isMacOS || Platform.isWindows || Platform.isLinux
         ? Scrollbar(
             controller: details.controller,
@@ -78,3 +76,4 @@ class AppScrollBehavior extends MaterialScrollBehavior {
         : child;
   }
 }
+

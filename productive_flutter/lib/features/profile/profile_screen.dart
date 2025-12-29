@@ -2,19 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:productive_flutter/features/splash/splash_screen.dart';
-import 'package:productive_flutter/core/auth/auth_provider.dart';
+import 'package:productive_flutter/core/auth/providers/auth_provider.dart';
 import 'package:productive_flutter/core/navigation/navigation_extension.dart';
-
-import '../../core/theme/theme_notifier.dart';
+import 'package:productive_flutter/core/theme/theme_notifier.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authController = ref.watch(authControllerProvider.notifier);
-    final userEmail = authController.userEmail;
-    final userDisplayName = authController.userDisplayName;
+    final authService = ref.watch(authServiceProvider);
+    final userEmail = authService.userEmail;
+    final userDisplayName = authService.userDisplayName;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -223,60 +222,61 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authControllerProvider);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        onPressed: authState.isLoading
-            ? null
-            : () async {
-                // Show confirmation dialog
-                final shouldLogout = await showDialog<bool>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Logout'),
-                    content: const Text('Are you sure you want to logout?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Logout'),
-                      ),
-                    ],
-                  ),
-                );
+        onPressed: () async {
+          // Show confirmation dialog
+          final shouldLogout = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Logout'),
+              content: const Text('Are you sure you want to logout?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Logout'),
+                ),
+              ],
+            ),
+          );
 
-                if (shouldLogout == true && context.mounted) {
-                  final authController =
-                      ref.read(authControllerProvider.notifier);
-                  await authController.signOut();
+          if (shouldLogout == true && context.mounted) {
+            final signOutUseCase = ref.read(signOutUseCaseProvider);
+            final result = await signOutUseCase.execute();
 
-                  if (context.mounted) {
-                    // Navigate to splash screen
-                    context.navigateToReplacing(const SplashScreen());
-                  }
-                }
-              },
+            if (context.mounted) {
+              result.fold(
+                (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(error.message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
+                (_) {
+                  // Navigate to splash screen on success
+                  context.navigateToReplacing(const SplashScreen());
+                },
+              );
+            }
+          }
+        },
         heroTag: 'logout_button',
-        icon: authState.isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Icon(
-                Icons.logout_rounded,
-                size: 28,
-              ),
-        label: Text(
-          authState.isLoading ? 'Logging out...' : 'Logout',
+        icon: const Icon(
+          Icons.logout_rounded,
+          size: 28,
+        ),
+        label: const Text(
+          'Logout',
           textAlign: TextAlign.start,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),

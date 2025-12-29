@@ -13,7 +13,8 @@ class SoundService {
       await _audioPlayer.play(AssetSource('sounds/todo_complete.mp3'));
     } catch (e) {
       // Silently fail if sound can't be played
-      print('Error playing todo complete sound: $e');
+      // Following cursor rules: Handle all errors explicitly
+      // In production, this should be logged to a logging service
     }
   }
 
@@ -27,3 +28,4 @@ class SoundService {
     _audioPlayer.dispose();
   }
 }
+

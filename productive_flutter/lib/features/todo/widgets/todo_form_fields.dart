@@ -73,7 +73,7 @@ class TodoFormFields extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
         ),
-        value: selectedCategory,
+        initialValue: selectedCategory,
         hint: Text(
           'Select Category',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(

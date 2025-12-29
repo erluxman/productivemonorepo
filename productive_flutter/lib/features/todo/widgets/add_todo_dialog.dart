@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/core/user/points_provider.dart'
+import 'package:productive_flutter/core/user/providers/points_provider.dart'
     as core_points;
 import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/models/todo.dart';
-import 'package:productive_flutter/core/todo/todo_provider.dart';
 
-import '../../../core/todo/todos_provider.dart';
+import '../../../core/todo/providers/todos_provider.dart';
 import 'todo_form_fields.dart';
 import 'todo_success_step.dart';
 
@@ -174,66 +173,86 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
   void _createTodo() async {
     if (!_formKey.currentState!.validate()) return;
 
-    try {
-      if (widget.todoToEdit != null) {
-        // Updating existing todo
-        final updatedTodo = widget.todoToEdit!.copyWith(
-          title: _todoTitle,
-          category: _selectedCategory,
-          dueDate: _dueDate,
-          description: _todoDescription,
-        );
+    if (widget.todoToEdit != null) {
+      // Updating existing todo
+      final result = await ref.read(todosProvider.notifier).updateTodo(
+            id: widget.todoToEdit!.id,
+            title: _todoTitle,
+            description:
+                _todoDescription.isNotEmpty ? _todoDescription : null,
+          );
 
-        // Update via API
-        await ref.read(todosProvider.notifier).updateTodo(
-              id: widget.todoToEdit!.id!,
-              title: _todoTitle,
-              description:
-                  _todoDescription.isNotEmpty ? _todoDescription : null,
-            );
+      if (!mounted) return;
 
-        // Update local provider
-        ref.read(todoProvider.notifier).updateTodo(updatedTodo);
-      } else {
-        // Creating new todo
-        // Update points first
-        ref.read(core_points.pointsProvider.notifier).subtractPoints(2);
+      result.fold(
+        (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+        (_) {
+          // Show success screen briefly before closing
+          setState(() {
+            _currentStep = AddTodoStep.success;
+          });
 
-        // Create and add the todo
-        final newTodo = Todo(
-          title: _todoTitle,
-          dueDate: _dueDate,
-          category: _selectedCategory!,
-          createdAt: DateTime.now(),
-          description: _todoDescription,
-        );
+          // Wait a moment and close the dialog
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            if (mounted) {
+              _closeDialog();
+            }
+          });
+        },
+      );
+    } else {
+      // Creating new todo
+      // Update points first
+      ref.read(core_points.pointsProvider.notifier).subtractPoints(2);
 
-        ref.read(todoProvider.notifier).addTodo(newTodo);
-        await ref.read(todosProvider.notifier).createTodo(todo: newTodo);
-      }
+      // Create and add the todo
+      final newTodo = Todo(
+        title: _todoTitle,
+        dueDate: _dueDate,
+        category: _selectedCategory!,
+        createdAt: DateTime.now(),
+        description: _todoDescription,
+      );
 
-      // Show success screen briefly before closing
-      setState(() {
-        _currentStep = AddTodoStep.success;
-      });
+      final result = await ref.read(todosProvider.notifier).createTodo(
+            todo: newTodo,
+          );
 
-      // Wait a moment and close the dialog
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (mounted) {
-          _closeDialog();
-        }
-      });
-    } catch (e) {
-      // Revert points if todo creation failed (only for new todos)
-      if (widget.todoToEdit == null) {
-        ref.read(core_points.pointsProvider.notifier).addPoints(2);
-      }
+      if (!mounted) return;
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
+      result.fold(
+        (error) {
+          // Revert points if todo creation failed
+          ref.read(core_points.pointsProvider.notifier).addPoints(2);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+        (_) {
+          // Show success screen briefly before closing
+          setState(() {
+            _currentStep = AddTodoStep.success;
+          });
+
+          // Wait a moment and close the dialog
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            if (mounted) {
+              _closeDialog();
+            }
+          });
+        },
+      );
     }
   }
 }

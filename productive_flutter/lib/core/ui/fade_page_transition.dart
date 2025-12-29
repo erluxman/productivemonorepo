@@ -16,3 +16,4 @@ class FadePageTransition extends PageRouteBuilder {
           reverseTransitionDuration: const Duration(milliseconds: 350),
         );
 }
+

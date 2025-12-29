@@ -92,14 +92,14 @@ After setup, you should have these files in place:
 
 ## Troubleshooting
 
-### Common Issues:
+### Common Issues
 
 1. **"google-services.json not found"**: Make sure the file is in `android/app/` directory
 2. **"GoogleService-Info.plist not found"**: Make sure the file is in `ios/Runner/` directory and added to Xcode project
 3. **Build errors**: Run `flutter clean` and `flutter pub get`
 4. **iOS build issues**: Make sure the plist file is properly added to the Xcode project
 
-### Firebase Console Settings:
+### Firebase Console Settings
 
 - Make sure Email/Password authentication is enabled
 - Check that your app's package name/bundle ID matches what you entered in Firebase

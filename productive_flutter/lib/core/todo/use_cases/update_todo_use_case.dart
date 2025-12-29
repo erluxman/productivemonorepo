@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 
-import '../../../../models/todo.dart';
+import '../../../models/todo.dart';
 import '../../errors/app_error.dart';
 import '../services/todo_service.dart';
 

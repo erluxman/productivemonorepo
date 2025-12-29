@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../utils/haptics.dart';
+import 'package:productive_flutter/utils/haptics.dart';
 
 import 'email_field.dart';
 import 'login_options.dart';
@@ -104,7 +104,7 @@ class LoginForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // Continue with social login options - similar to splash screen
+                // Continue with social login options
                 Text(
                   "Continue with",
                   style: TextStyle(
@@ -124,3 +124,4 @@ class LoginForm extends StatelessWidget {
     );
   }
 }
+

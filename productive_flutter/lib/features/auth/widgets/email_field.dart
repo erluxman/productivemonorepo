@@ -47,3 +47,4 @@ class EmailUsernameField extends StatelessWidget {
     );
   }
 }
+

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:productive_flutter/core/theme/app_theme.dart';
 
-import '../../core/user/points_provider.dart';
+import '../../core/user/providers/points_provider.dart';
 import 'feeds/feed_page.dart';
 import 'inbox/inbox_page.dart';
 import 'inbox/widgets/add_todo_button.dart';
@@ -129,63 +129,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       duration: AppTheme.fabAnimationDuration,
       curve: Curves.easeInOutCubic,
     );
-  }
-}
-
-// Custom animated notch shape that smoothly transitions between states
-class AnimatedNotchBottomAppBarShape extends NotchedShape {
-  final Animation<double> animation;
-  final ShapeBorder host;
-  final ShapeBorder guest;
-
-  const AnimatedNotchBottomAppBarShape({
-    required this.animation,
-    required this.host,
-    required this.guest,
-  });
-
-  @override
-  Path getOuterPath(Rect host, Rect? guest) {
-    if (guest == null || animation.value <= 0.0) {
-      // When FAB is fully hidden, return a path without a notch
-      return this.host.getOuterPath(host);
-    }
-
-    // Calculate the notch size based on animation value
-    final notchProgress = animation.value;
-
-    // Create a standard notched shape
-    final standardNotchedShape = AutomaticNotchedShape(this.host, this.guest);
-    final notchedPath = standardNotchedShape.getOuterPath(host, guest);
-
-    if (animation.value >= 1.0) {
-      // When FAB is fully visible, use standard notched path
-      return notchedPath;
-    }
-
-    // Calculate a more gradual transition for healing the notch on appearance
-    // Using a custom easing formula that makes healing slower
-    double adjustedProgress = notchProgress;
-
-    // Apply additional easing for notch healing when FAB is returning (appearing)
-    // This slows down the first half of the healing animation
-    if (notchProgress > 0.5) {
-      // Apply stronger easing to the 0.5-1.0 range to make it even slower
-      final t = (notchProgress - 0.5) * 2.0; // normalize to 0.0-1.0
-      final easedT = Curves.easeInOutCubic.transform(t) *
-          0.5; // slower easing, limit to 0.0-0.5
-      adjustedProgress = 0.5 + easedT; // remap to 0.5-1.0 range
-    }
-
-    // During transition, adjust the guest rect to create a "healing" effect
-    final adjustedGuest = Rect.fromCenter(
-      center: guest.center,
-      width: guest.width * adjustedProgress,
-      height: guest.height * adjustedProgress,
-    );
-
-    // Create a transitional notched shape
-    final transitionalShape = AutomaticNotchedShape(this.host, this.guest);
-    return transitionalShape.getOuterPath(host, adjustedGuest);
   }
 }

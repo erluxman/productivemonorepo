@@ -110,3 +110,4 @@ class AppTheme {
   static const EdgeInsets navItemPadding = EdgeInsets.symmetric(vertical: 6.0);
   static const EdgeInsets profileImagePadding = EdgeInsets.all(2.0);
 }
+

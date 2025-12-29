@@ -110,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
                     parent: animation,
                     curve: flightDirection == HeroFlightDirection.push
                         ? Curves.easeOutQuad
-                        : Curves.easeInOutCubic, // Better curve for reverse
+                        : Curves.easeInOutCubic,
                   );
 
                   return AnimatedBuilder(
@@ -119,8 +119,7 @@ class _SplashScreenState extends State<SplashScreen>
                       // Different rotation and sizing logic based on direction
                       final rotationAngle =
                           flightDirection == HeroFlightDirection.push
-                              ? curvedAnimation.value *
-                                  0.15 // Reduced from 0.2 for faster animation
+                              ? curvedAnimation.value * 0.15
                               : (1 - curvedAnimation.value) * 0.15;
 
                       final heightAdjustment =
@@ -135,7 +134,6 @@ class _SplashScreenState extends State<SplashScreen>
                           height: heightAdjustment,
                           width: heightAdjustment,
                           animate: true,
-                          // Avoid animations restarting
                           repeat: true,
                           frameRate: FrameRate.max,
                         ),
@@ -143,9 +141,7 @@ class _SplashScreenState extends State<SplashScreen>
                     },
                   );
                 },
-                // Tell Hero to maintain the source widget during flight
                 placeholderBuilder: (context, size, widget) {
-                  // Return a transparent placeholder instead of hiding the widget
                   return const Opacity(
                     opacity: 0,
                     child: SizedBox(

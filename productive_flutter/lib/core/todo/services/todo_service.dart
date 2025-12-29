@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../../models/todo.dart';
+import '../../../models/todo.dart';
 import '../../config/app_config.dart';
 import '../../errors/app_error.dart';
 

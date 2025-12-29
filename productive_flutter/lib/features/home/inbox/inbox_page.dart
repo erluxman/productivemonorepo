@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/core/todo/todos_provider.dart';
-import 'package:productive_flutter/core/user/points_provider.dart';
-import 'package:productive_flutter/utils/sound_service.dart';
+import 'package:productive_flutter/core/todo/providers/todos_provider.dart';
+import 'package:productive_flutter/core/user/providers/points_provider.dart';
 import 'package:productive_flutter/features/home/inbox/widgets/todo_item.dart';
 import 'package:productive_flutter/features/home/inbox/widgets/todo_success_dialog.dart';
 import 'package:productive_flutter/features/todo/widgets/add_todo_dialog.dart';
+import 'package:productive_flutter/utils/sound_service.dart';
 
 import '../../../models/todo.dart';
 
@@ -39,7 +39,6 @@ class _AnimatedTodoTitleState extends State<AnimatedTodoTitle> {
   @override
   void didUpdateWidget(AnimatedTodoTitle oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Only animate if the completion state changed
     if (oldWidget.isCompleted != widget.isCompleted) {
       _isAnimating = true;
       _previousCompleted = oldWidget.isCompleted;
@@ -48,7 +47,6 @@ class _AnimatedTodoTitleState extends State<AnimatedTodoTitle> {
 
   @override
   Widget build(BuildContext context) {
-    // If not animating and completed, show full strike-through
     if (!_isAnimating && widget.isCompleted) {
       return Text(
         widget.title,
@@ -106,6 +104,8 @@ class _AnimatedTodoTitleState extends State<AnimatedTodoTitle> {
   }
 }
 
+/// Inbox page refactored to use v2 architecture
+/// Following cursor rules: Handle Either results properly in UI
 class InboxPage extends ConsumerWidget {
   const InboxPage({super.key});
 
@@ -166,77 +166,108 @@ class InboxPage extends ConsumerWidget {
 
   Future<void> _toggleTodoCompletion(
       BuildContext context, WidgetRef ref, Todo todo) async {
-    try {
-      if (todo.completed == false) {
-        // Completing a todo - show dialog first, then add points
-        await ref.read(todosProvider.notifier).updateTodo(
-              id: todo.id,
-              completed: true,
-            );
-
-        // Play sound when completing a todo
-        SoundService().playTodoCompleteSound();
-
-        // Show success dialog only when completing a todo
-        final targetPosition = _getPointsPosition(context);
-        if (targetPosition != null) {
-          final feedMessage = await showDialog<String>(
-            context: context,
-            barrierDismissible: true,
-            builder: (context) => TodoSuccessDialog(
-              targetPosition: targetPosition,
-            ),
+    if (todo.completed == false) {
+      // Completing a todo - show dialog first, then add points
+      final result = await ref.read(todosProvider.notifier).updateTodo(
+            id: todo.id,
+            completed: true,
           );
 
-          // Only add points if the dialog was confirmed (not dismissed)
-          if (feedMessage != null) {
-            ref.read(pointsProvider.notifier).addPoints(5);
-
-            // Update with feed message if provided
-            if (feedMessage.isNotEmpty) {
-              await ref.read(todosProvider.notifier).updateTodo(
-                    id: todo.id,
-                    description: feedMessage,
-                  );
-            }
-          } else {
-            // Dialog was dismissed, revert the todo completion
-            await ref.read(todosProvider.notifier).updateTodo(
-                  id: todo.id,
-                  completed: false,
-                );
+      // Handle Either result
+      result.fold(
+        (error) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.message),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
-        }
-      } else {
-        // Unchecking a completed todo - subtract points and update
-        await ref.read(todosProvider.notifier).updateTodo(
-              id: todo.id,
-              completed: false,
+        },
+        (updatedTodo) async {
+          // Play sound when completing a todo
+          SoundService().playTodoCompleteSound();
+
+          // Show success dialog only when completing a todo
+          final targetPosition = _getPointsPosition(context);
+          if (targetPosition != null) {
+            final feedMessage = await showDialog<String>(
+              context: context,
+              barrierDismissible: true,
+              builder: (context) => TodoSuccessDialog(
+                targetPosition: targetPosition,
+              ),
             );
 
-        // Subtract points when unchecking a completed todo
-        ref.read(pointsProvider.notifier).subtractPoints(5);
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
+            // Only add points if the dialog was confirmed (not dismissed)
+            if (feedMessage != null && context.mounted) {
+              ref.read(pointsProvider.notifier).addPoints(5);
+
+              // Update with feed message if provided
+              if (feedMessage.isNotEmpty) {
+                await ref.read(todosProvider.notifier).updateTodo(
+                      id: todo.id,
+                      description: feedMessage,
+                    );
+              }
+            } else if (context.mounted) {
+              // Dialog was dismissed, revert the todo completion
+              await ref.read(todosProvider.notifier).updateTodo(
+                    id: todo.id,
+                    completed: false,
+                  );
+            }
+          }
+        },
+      );
+    } else {
+      // Unchecking a completed todo - subtract points and update
+      final result = await ref.read(todosProvider.notifier).updateTodo(
+            id: todo.id,
+            completed: false,
+          );
+
+      result.fold(
+        (error) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        (_) {
+          // Subtract points when unchecking a completed todo
+          ref.read(pointsProvider.notifier).subtractPoints(5);
+        },
+      );
     }
   }
 
   Future<void> _deleteTodo(
       BuildContext context, WidgetRef ref, Todo todo) async {
-    try {
-      await ref.read(todosProvider.notifier).deleteTodo(todo.id!);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    }
+    if (todo.id == null) return;
+
+    final result = await ref.read(todosProvider.notifier).deleteTodo(todo.id!);
+
+    result.fold(
+      (error) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      (_) {
+        // Success - handled by provider state update
+      },
+    );
   }
 
   Future<void> _editTodo(BuildContext context, WidgetRef ref, Todo todo) async {
@@ -244,23 +275,6 @@ class InboxPage extends ConsumerWidget {
       context: context,
       builder: (context) => AddTodoDialog(todoToEdit: todo),
     );
-  }
-
-  Future<void> _showAddTodoDialog(BuildContext context, WidgetRef ref) async {
-    final result = await showDialog<Todo>(
-      context: context,
-      builder: (context) => const AddTodoDialog(),
-    );
-
-    if (result != null && context.mounted) {
-      try {
-        await ref.read(todosProvider.notifier).createTodo(todo: result);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    }
   }
 
   Offset? _getPointsPosition(BuildContext context) {
@@ -271,24 +285,5 @@ class InboxPage extends ConsumerWidget {
     );
   }
 
-  String _formatTime(DateTime dateTime) {
-    final hour = dateTime.hour;
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final formattedHour = hour > 12 ? hour - 12 : hour;
-    final today = DateTime.now();
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-
-    if (dateTime.year == today.year &&
-        dateTime.month == today.month &&
-        dateTime.day == today.day) {
-      return 'Today at $formattedHour:$minute $period';
-    } else if (dateTime.year == tomorrow.year &&
-        dateTime.month == tomorrow.month &&
-        dateTime.day == tomorrow.day) {
-      return 'Tomorrow at $formattedHour:$minute $period';
-    } else {
-      return '${dateTime.day}/${dateTime.month} at $formattedHour:$minute $period';
-    }
-  }
 }
+

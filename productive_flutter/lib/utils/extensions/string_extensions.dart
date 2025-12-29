@@ -7,3 +7,4 @@ extension StringExtension on String {
     return RegExp(r'^[a-zA-Z0-9_]{4,}$').hasMatch(this);
   }
 }
+

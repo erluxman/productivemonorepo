@@ -15,7 +15,7 @@ class AnimatedCircularProgressBar extends StatefulWidget {
   final double lineWidth;
 
   @override
-   State<AnimatedCircularProgressBar> createState() =>
+  State<AnimatedCircularProgressBar> createState() =>
       _AnimatedCircularProgressBarState();
 }
 
@@ -33,7 +33,7 @@ class _AnimatedCircularProgressBarState
   void didUpdateWidget(AnimatedCircularProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.progress != oldWidget.progress) {
-      _progress = oldWidget.progress;
+      _progress = widget.progress;
     }
   }
 
@@ -59,3 +59,4 @@ class _AnimatedCircularProgressBarState
     );
   }
 }
+

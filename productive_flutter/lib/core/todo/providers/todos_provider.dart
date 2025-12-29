@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 
-import '../../../../models/todo.dart';
+import '../../../models/todo.dart';
 import '../services/todo_service.dart';
 import '../use_cases/get_todos_use_case.dart';
 import '../use_cases/create_todo_use_case.dart';

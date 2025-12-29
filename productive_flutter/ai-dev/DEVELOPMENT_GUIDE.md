@@ -9,10 +9,12 @@ Quick reference for AI-assisted Flutter development with Cursor.
 ## 📋 Quick Start
 
 ### Core Rules (Always Active)
+
 - `.cursor/rules/core/*.mdc` - Core constraints, workflow, security (3 files)
 - `.cursor/rules/flutter/*.mdc` - Flutter-specific rules (6 files)
 
 ### Key Files
+
 - `ai-dev/DEVELOPMENT_GUIDE.md` - **This file**
 - `ai-dev/layout_conventions.md` - Project structure
 - `ai-dev/platform_guides/flutter.md` - Flutter conventions
@@ -23,7 +25,7 @@ Quick reference for AI-assisted Flutter development with Cursor.
 
 ## 🏗️ Project Structure
 
-```
+```text
 lib/
   core/          # Services, providers, shared infrastructure
   features/      # Feature-based UI organization
@@ -38,9 +40,11 @@ See `ai-dev/layout_conventions.md` for detailed structure.
 ## 🔧 Common Tasks
 
 ### New Feature
-```
+
+```text
 @ai-dev/prompts/feature_spec.md
 ```
+
 1. Define spec
 2. Plan implementation
 3. Write tests
@@ -48,22 +52,26 @@ See `ai-dev/layout_conventions.md` for detailed structure.
 5. Review with `@ai-dev/checklists/CHECKLIST.md`
 
 ### Bug Fix
-```
+
+```text
 @ai-dev/prompts/tdd_bugfix.md
 ```
+
 1. Write failing test
 2. Fix bug
 3. Verify test passes
 4. Add regression tests
 
 ### Code Review
-```
+
+```text
 @ai-dev/prompts/review.md
 @ai-dev/checklists/CHECKLIST.md
 ```
 
 ### Release
-```
+
+```text
 @ai-dev/checklists/release/flutter.md
 ```
 
@@ -72,7 +80,6 @@ See `ai-dev/layout_conventions.md` for detailed structure.
 ## 🎯 Flutter Rules by Concern
 
 | Concern | Rule File |
-|---------|-----------|
 | **Common Patterns** | `.cursor/rules/flutter/common_patterns.mdc` |
 | **Error Handling** | `.cursor/rules/flutter/error_handling.mdc` |
 | **Testing** | `.cursor/rules/flutter/testing.mdc` |
@@ -120,21 +127,24 @@ From `.cursor/rules/core/*.mdc`:
 ## 📚 Reference Files
 
 ### Prompts (ai-dev/prompts/)
+
 - `feature_spec.md` - Feature specification template
 - `tdd_bugfix.md` - TDD bugfix workflow
 - `review.md` - Code review template
 
 ### Checklists (ai-dev/checklists/)
+
 - `CHECKLIST.md` - Combined code review, security, testing checklist
 - `release/flutter.md` - Flutter release checklist
 
 ### Platform Guide
+
 - `platform_guides/flutter.md` - Detailed Flutter conventions
 
 ### Code Layout
+
 - `layout_conventions.md` - Project structure guide
 
 ---
 
 **Keep it simple. Focus on Flutter. Follow the rules.**
-

@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/v2/app.dart';
+import 'package:productive_flutter/features/app.dart';
 
 void main() async {
   // Enable Flutter scrolling on desktop platforms
