@@ -1,9 +1,3 @@
-import 'package:flutter_test/flutter_test.dart';
-
-void main() {
-  group("blablabla", () {
-    test("unit tests", () {
-      expect(5, 4 + 1);
-    });
-  });
-}
+// This file serves as a placeholder for unit tests
+// Individual test files should be run separately or via test runner
+// Run all unit tests with: flutter test test/unit/

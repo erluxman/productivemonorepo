@@ -4,7 +4,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: Colors.white,
+      scaffoldBackgroundColor: const Color.fromARGB(255, 240, 239, 230),
       fontFamily: 'Product Sans',
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
@@ -96,18 +96,17 @@ class AppTheme {
   static const double fabBorderRadiusSmall = 16.0;
   static const double profileImageSize = 40.0;
   static const double iconSizeSmall = 24.0;
-  static const double iconSizeMedium = 28.0;
-  static const double iconSizeLarge = 32.0;
+  static const double iconSizeMedium = 24.0;
+  static const double iconSizeLarge = 28.0;
 
   // Animation durations
-  static const Duration fabAnimationDuration = Duration(milliseconds: 300);
-  static const Duration titleAnimationDuration = Duration(milliseconds: 300);
-  static const Duration dialogAnimationDuration = Duration(milliseconds: 400);
-  static const Duration navItemAnimationDuration = Duration(milliseconds: 400);
+  static const Duration fabAnimationDuration = Duration(milliseconds: 200);
+  static const Duration titleAnimationDuration = Duration(milliseconds: 200);
+  static const Duration dialogAnimationDuration = Duration(milliseconds: 300);
+  static const Duration navItemAnimationDuration = Duration(milliseconds: 300);
 
   // Padding values
   static const EdgeInsets screenPadding = EdgeInsets.all(16.0);
-  static const EdgeInsets navItemPadding = EdgeInsets.symmetric(vertical: 6.0);
+  static const EdgeInsets navItemPadding = EdgeInsets.symmetric(vertical: 0.0);
   static const EdgeInsets profileImagePadding = EdgeInsets.all(2.0);
 }
-

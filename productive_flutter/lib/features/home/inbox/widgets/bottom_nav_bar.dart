@@ -24,9 +24,9 @@ class BottomNavBar extends StatelessWidget {
       notchMargin: AppTheme.bottomNavBarNotchMargin,
       elevation: 8 + (visualAnimValue * 4),
       padding: EdgeInsets.zero,
+      height: AppTheme.bottomNavBarHeight,
       shape: shape,
       child: SizedBox(
-        height: AppTheme.bottomNavBarHeight,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -103,6 +103,7 @@ class BottomNavBar extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  const SizedBox(height: 6),
                   Center(
                     child: Icon(
                       icon,
@@ -112,13 +113,13 @@ class BottomNavBar extends StatelessWidget {
                       color: isSelected ? primaryColor : unselectedColor,
                     ),
                   ),
-                  const SizedBox(height: 2),
                   AnimatedDefaultTextStyle(
                     duration: AppTheme.navItemAnimationDuration,
                     style: textTheme.labelSmall!.copyWith(
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
                       color: isSelected ? primaryColor : Colors.grey[600],
+                      fontSize: 12,
                       fontFamily: textTheme.bodyMedium?.fontFamily,
                     ),
                     child: Text(label),

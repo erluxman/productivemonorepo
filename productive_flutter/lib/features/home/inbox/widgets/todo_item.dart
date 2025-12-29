@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../models/todo.dart';
 
-class TodoItem extends StatelessWidget {
+class TodoItem extends StatefulWidget {
   final Todo todo;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
@@ -17,9 +17,14 @@ class TodoItem extends StatelessWidget {
   });
 
   @override
+  State<TodoItem> createState() => _TodoItemState();
+}
+
+class _TodoItemState extends State<TodoItem> {
+  @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(todo.id ?? ""),
+      key: Key(widget.todo.id ?? ""),
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20.0),
@@ -30,91 +35,71 @@ class TodoItem extends StatelessWidget {
         ),
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (_) => onDelete(),
-      child: Card(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: onTap,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      onDismissed: (_) => widget.onDelete(),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: widget.onToggle,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                margin: const EdgeInsets.only(top: 6),
+                decoration: BoxDecoration(
+                  color: (widget.todo.completed ?? false)
+                      ? Colors.greenAccent
+                      : Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.greenAccent),
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  color: (widget.todo.completed ?? false)
+                      ? Colors.white
+                      : Colors.white,
+                  size: 10,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: GestureDetector(
+                onTap: widget.onTap,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
                         Text(
-                          todo.title,
-                          style: TextStyle(
-                            decoration: (todo.completed ?? false)
-                                ? TextDecoration.lineThrough
-                                : TextDecoration.none,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          widget.todo.title,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
-                        if (todo.description != null &&
-                            todo.description!.isNotEmpty) ...[
+                      ],
+                    ),
+                    if (widget.todo.description != null &&
+                        widget.todo.description!.isNotEmpty) ...[
+                      Column(
+                        children: [
                           const SizedBox(height: 4),
                           Text(
-                            todo.description ?? "",
+                            widget.todo.description ?? "",
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 14,
-                              fontStyle: FontStyle.italic,
                             ),
                           ),
                         ],
-                        if (onTap != null) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.edit,
-                                size: 12,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Tap to edit',
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              GestureDetector(
-                onTap: onToggle,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: (todo.completed ?? false)
-                        ? Colors.blue
-                        : Colors.grey[200],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check,
-                    color: (todo.completed ?? false)
-                        ? Colors.white
-                        : Colors.grey[400],
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

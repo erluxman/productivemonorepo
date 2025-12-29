@@ -80,7 +80,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               points: points,
               titleProgress: _titleProgress,
             ),
-            const SizedBox(height: 4),
             Expanded(
               child: PageView(
                 controller: _pageController,

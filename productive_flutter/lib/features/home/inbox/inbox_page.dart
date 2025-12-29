@@ -113,12 +113,19 @@ class InboxPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final todosAsync = ref.watch(todosProvider);
 
-    return Scaffold(
-      body: todosAsync.when(
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: todosAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
                 Icons.error_outline,
@@ -146,18 +153,22 @@ class InboxPage extends ConsumerWidget {
                   Text('No todos yet. Add one by tapping the + button below.'),
             );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: todos.length,
-            itemBuilder: (context, index) {
-              final todo = todos[index];
-              return TodoItem(
-                todo: todo,
-                onToggle: () => _toggleTodoCompletion(context, ref, todo),
-                onDelete: () => _deleteTodo(context, ref, todo),
-                onTap: () => _editTodo(context, ref, todo),
-              );
-            },
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: todos
+                  .map((todo) => TodoItem(
+                        todo: todo,
+                        onToggle: () =>
+                            _toggleTodoCompletion(context, ref, todo),
+                        onDelete: () => _deleteTodo(context, ref, todo),
+                        onTap: () => _editTodo(context, ref, todo),
+                      ))
+                  .toList(),
+            ),
           );
         },
       ),
@@ -167,60 +178,40 @@ class InboxPage extends ConsumerWidget {
   Future<void> _toggleTodoCompletion(
       BuildContext context, WidgetRef ref, Todo todo) async {
     if (todo.completed == false) {
-      // Completing a todo - show dialog first, then add points
-      final result = await ref.read(todosProvider.notifier).updateTodo(
-            id: todo.id,
-            completed: true,
-          );
+      // Play sound when completing a todo
+      SoundService().playTodoCompleteSound();
 
-      // Handle Either result
-      result.fold(
-        (error) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+      // Show success dialog only when completing a todo
+      final targetPosition = _getPointsPosition(context);
+      if (targetPosition != null) {
+        final feedMessage = await showDialog<String>(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) => TodoSuccessDialog(
+            targetPosition: targetPosition,
+          ),
+        );
+
+        // Only add points if the dialog was confirmed (not dismissed)
+        if (feedMessage != null && context.mounted) {
+          ref.read(pointsProvider.notifier).addPoints(5);
+
+          // Update with feed message if provided
+          if (feedMessage.isNotEmpty) {
+            await ref.read(todosProvider.notifier).updateTodo(
+                  id: todo.id,
+                  description: feedMessage,
+                  completed: true,
+                );
           }
-        },
-        (updatedTodo) async {
-          // Play sound when completing a todo
-          SoundService().playTodoCompleteSound();
-
-          // Show success dialog only when completing a todo
-          final targetPosition = _getPointsPosition(context);
-          if (targetPosition != null) {
-            final feedMessage = await showDialog<String>(
-              context: context,
-              barrierDismissible: true,
-              builder: (context) => TodoSuccessDialog(
-                targetPosition: targetPosition,
-              ),
-            );
-
-            // Only add points if the dialog was confirmed (not dismissed)
-            if (feedMessage != null && context.mounted) {
-              ref.read(pointsProvider.notifier).addPoints(5);
-
-              // Update with feed message if provided
-              if (feedMessage.isNotEmpty) {
-                await ref.read(todosProvider.notifier).updateTodo(
-                      id: todo.id,
-                      description: feedMessage,
-                    );
-              }
-            } else if (context.mounted) {
-              // Dialog was dismissed, revert the todo completion
-              await ref.read(todosProvider.notifier).updateTodo(
-                    id: todo.id,
-                    completed: false,
-                  );
-            }
-          }
-        },
-      );
+        } else if (context.mounted) {
+          // Dialog was dismissed, revert the todo completion
+          await ref.read(todosProvider.notifier).updateTodo(
+                id: todo.id,
+                completed: false,
+              );
+        }
+      }
     } else {
       // Unchecking a completed todo - subtract points and update
       final result = await ref.read(todosProvider.notifier).updateTodo(
@@ -284,6 +275,4 @@ class InboxPage extends ConsumerWidget {
       Offset(MediaQuery.of(context).size.width - 60, 40),
     );
   }
-
 }
-

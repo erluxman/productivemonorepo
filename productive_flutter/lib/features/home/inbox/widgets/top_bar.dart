@@ -20,7 +20,7 @@ class TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppTheme.screenPadding,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -39,7 +39,7 @@ class TopBar extends StatelessWidget {
     return Row(
       children: [
         _buildPointsSection(context),
-        const SizedBox(width: 4),
+        const SizedBox(width: 8),
         _buildProfileImage(context),
       ],
     );
