@@ -20,6 +20,23 @@ class TodoItem extends StatefulWidget {
   State<TodoItem> createState() => _TodoItemState();
 }
 
+String getIconFromCategory(TodoCategory category) {
+  switch (category) {
+    case TodoCategory.work:
+      return "👨‍💻";
+    case TodoCategory.personal:
+      return "👨‍👩‍👧‍👦";
+    case TodoCategory.health:
+      return "💪";
+    case TodoCategory.general:
+      return "🏠";
+    case TodoCategory.habits:
+      return "🔁";
+    case TodoCategory.learning:
+      return "📚";
+  }
+}
+
 class _TodoItemState extends State<TodoItem> {
   @override
   Widget build(BuildContext context) {
@@ -37,32 +54,14 @@ class _TodoItemState extends State<TodoItem> {
       direction: DismissDirection.endToStart,
       onDismissed: (_) => widget.onDelete(),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.only(top: 16, left: 8, right: 8),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: widget.onToggle,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                margin: const EdgeInsets.only(top: 6),
-                decoration: BoxDecoration(
-                  color: (widget.todo.completed ?? false)
-                      ? Colors.greenAccent
-                      : Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.greenAccent),
-                ),
-                child: Icon(
-                  Icons.check_rounded,
-                  color: (widget.todo.completed ?? false)
-                      ? Colors.white
-                      : Colors.white,
-                  size: 10,
-                ),
-              ),
+            Text(
+              getIconFromCategory(widget.todo.category ?? TodoCategory.general),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
                 onTap: widget.onTap,
@@ -81,7 +80,7 @@ class _TodoItemState extends State<TodoItem> {
                       ],
                     ),
                     if (widget.todo.description != null &&
-                        widget.todo.description!.isNotEmpty) ...[
+                        widget.todo.description!.isNotEmpty)
                       Column(
                         children: [
                           const SizedBox(height: 4),
@@ -93,9 +92,31 @@ class _TodoItemState extends State<TodoItem> {
                             ),
                           ),
                         ],
-                      ),
-                    ],
+                      )
+                    else
+                      const SizedBox(height: 8)
                   ],
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: widget.onToggle,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                margin: const EdgeInsets.only(top: 6),
+                decoration: BoxDecoration(
+                  color: (widget.todo.completed ?? false)
+                      ? Colors.greenAccent
+                      : Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.greenAccent),
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  color: (widget.todo.completed ?? false)
+                      ? Colors.white
+                      : Colors.white,
+                  size: 10,
                 ),
               ),
             ),
