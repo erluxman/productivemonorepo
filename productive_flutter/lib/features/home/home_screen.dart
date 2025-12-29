@@ -32,7 +32,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     _fabAnimationController = AnimationController(
       vsync: this,
       duration: AppTheme.fabAnimationDuration,
-      value: 1.0,
+      value: 0.0,
     );
 
     _notchAnimation = TweenSequence<double>([
@@ -94,11 +94,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ],
         ),
       ),
-      floatingActionButton: _selectedIndex == 0
-          ? null
-          : AddTodoButton(
-              fabAnimationController: _fabAnimationController,
-            ),
+      floatingActionButton: AddTodoButton(
+        fabAnimationController: _fabAnimationController,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
@@ -111,6 +109,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _handlePageChanged(int index) {
     setState(() => _selectedIndex = index);
+    if (index != _fabAnimationController.value) {
+      _fabAnimationController.animateTo(
+        index == 0 ? 0.0 : 1.0,
+        duration: AppTheme.dialogAnimationDuration,
+        curve: Curves.easeInCubic,
+      );
+    }
     _animateTitle(index);
   }
 
@@ -124,6 +129,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _animateToTab(int index) {
     if (_selectedIndex == index) return;
+    _fabAnimationController.animateTo(
+      index == 0 ? 0.0 : 1.0,
+      duration: AppTheme.dialogAnimationDuration,
+      curve: Curves.easeInCubic,
+    );
     _pageController.animateToPage(
       index,
       duration: AppTheme.fabAnimationDuration,

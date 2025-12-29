@@ -15,10 +15,6 @@ alias resetEmulators="lsof -ti:4400,4500,8080 | xargs kill -9"
 
 alias startEmulators="firebase emulators:start --import=./firebase-data --export-on-exit=./firebase-data"
 
-```
-
-```
-
 To deploy the functions, we need to run the following command:
 
 ```bash
@@ -37,11 +33,11 @@ and the firebase function urls are
 https://us-central1-productive-78c0e.cloudfunctions.net/createUser
 ```
 
-# Install Google Cloud SDK (on macOS)
+### Install Google Cloud SDK (on macOS)
 
 brew install --cask google-cloud-sdk
 
-# Then authenticate and clean up
+### Then authenticate and clean up
 
 ```bash
 gcloud auth login gcloud container images list-tags gcr.io/productive-78c0e/us/gcf --format="get(digest)" | while read digest; do gcloud container images delete "gcr.io/productive-78c0e/us/gcf@$digest" --quiet; done
