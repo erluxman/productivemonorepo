@@ -37,8 +37,6 @@ and the firebase function urls are
 https://us-central1-productive-78c0e.cloudfunctions.net/createUser
 ```
 
-
-
 # Install Google Cloud SDK (on macOS)
 
 brew install --cask google-cloud-sdk

@@ -11,8 +11,8 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
+const FormData = require("form-data");
 const axios = require("axios");
-// const FormData = require("form-data");
 
 // Initialize Firebase
 admin.initializeApp();
@@ -45,7 +45,6 @@ app.use(express.json());
 // Collection reference
 const todosCollection = "todos";
 
-// Create todo
 app.post("/todos", async (req, res) => {
   try {
     const { title, description, completed, category, createdAt } = req.body;
@@ -85,15 +84,13 @@ app.post("/todos", async (req, res) => {
   }
 });
 function base64ToFile(base64Str, fileName, mimeType) {
-  const byteCharacters = atob(base64Str);
-  const byteNumbers = new Array(byteCharacters.length);
-
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-
-  const byteArray = new Uint8Array(byteNumbers);
-  return new File([byteArray], fileName, { type: mimeType });
+  const byteCharacters = Buffer.from(base64Str, "base64");
+  return {
+    buffer: byteCharacters,
+    size: byteCharacters.length,
+    name: fileName,
+    type: mimeType,
+  };
 }
 app.post("/stripeProxy", async (req, res) => {
   try {
@@ -110,18 +107,15 @@ app.post("/stripeProxy", async (req, res) => {
     console.log("mimeType", mimeType);
     if (file) {
       console.log("File received:");
-      base64file = base64ToFile(file, "file", mimeType);
-      fileSize = base64file.size;
+      const base64file = base64ToFile(file, "file", mimeType);
+      const fileSize = base64file.size;
       console.log("File size:", fileSize / 1024, "KB");
 
       const buffer = Buffer.from(file, "base64");
-      const blob = new Blob([buffer], { type: "image/png" });
 
       // Create multipart form
       const form = new FormData();
-      form.append("file", blob, "decoded.png");
-
-      const axios = require("axios");
+      form.append("file", buffer, "decoded.png");
 
       let resp = await axios
         .post(urlEndpoint, form, {
@@ -154,32 +148,6 @@ app.post("/stripeProxy", async (req, res) => {
       params: params,
       urlEndpoint: urlEndpoint,
       method: method,
-    });
-
-    if (!title) {
-      return res.status(400).json({ error: "Title is required" });
-    }
-
-    const todo = {
-      title: title.trim(),
-      description: description ? description.trim() : "",
-      completed: completed,
-      category: category,
-      createdAt: createdAt,
-    };
-
-    console.log("Creating todo:", todo);
-
-    const docRef = await db.collection(todosCollection).add(todo);
-
-    console.log("Todo created with ID:", docRef.id);
-
-    const todoDoc = await docRef.get();
-    const todoData = todoDoc.data();
-
-    return res.status(201).json({
-      id: docRef.id,
-      ...todoData,
     });
   } catch (error) {
     console.error("Error creating todo:", error);
