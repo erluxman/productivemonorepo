@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:productive_flutter/features/home/inbox/widgets/add_todo_dialog.dart';
+import 'package:productive_flutter/features/todo/widgets/add_todo_dialog.dart';
 import 'package:productive_flutter/models/todo.dart';
+
 import '../../helpers/test_helpers.dart';
 
 void main() {
   group('AddTodoDialog', () {
-    testWidgets('should display dialog with title and form fields', (tester) async {
+    testWidgets('should display dialog with title and form fields',
+        (tester) async {
       // Act
       await tester.pumpWidget(
         createTestApp(
@@ -103,7 +105,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Enter description
-      await tester.enterText(find.byType(TextFormField).last, 'Test Description');
+      await tester.enterText(
+          find.byType(TextFormField).last, 'Test Description');
       await tester.pumpAndSettle();
 
       // Submit
@@ -151,4 +154,3 @@ void main() {
     });
   });
 }
-

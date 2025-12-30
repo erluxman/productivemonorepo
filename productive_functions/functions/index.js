@@ -47,29 +47,43 @@ const todosCollection = "todos";
 
 app.post("/todos", async (req, res) => {
   try {
-    const { title, description, completed, category, createdAt } = req.body;
+    const {
+      title,
+      description,
+      completed,
+      category,
+      createdAt,
+      id,
+      isUrgent,
+      updatedAt,
+      dueDate,
+    } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: "Title is required" });
     }
-
+    console.log("Request body:", req.body);
     const todo = {
       title: title.trim(),
       description: description ? description.trim() : "",
       completed: completed,
       category: category,
       createdAt: createdAt,
+      isUrgent: isUrgent,
+      updatedAt: updatedAt,
+      dueDate: dueDate,
     };
 
     console.log("Creating todo:", todo);
-
-    const docRef = await db.collection(todosCollection).add(todo);
+    const docRef = await db.collection(todosCollection).doc();
+    todo.id = docRef.id;
+    await docRef.set(todo);
 
     console.log("Todo created with ID:", docRef.id);
 
     const todoDoc = await docRef.get();
     const todoData = todoDoc.data();
-
+    console.log("Todo data:", todoData);
     return res.status(201).json({
       id: docRef.id,
       ...todoData,
@@ -190,8 +204,10 @@ app.get("/todos", async (req, res) => {
 app.put("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, completed } = req.body;
-
+    const { title, description, completed, isUrgent, dueDate } = req.body;
+    //print id and params of body
+    console.log("ID:", id);
+    console.log("Params:", req.body);
     const todoRef = db.collection(todosCollection).doc(id);
     const todoDoc = await todoRef.get();
 
@@ -206,6 +222,8 @@ app.put("/todos/:id", async (req, res) => {
     if (title !== undefined) updateData.title = title.trim();
     if (description !== undefined) updateData.description = description.trim();
     if (completed !== undefined) updateData.completed = completed;
+    if (isUrgent !== undefined) updateData.isUrgent = isUrgent;
+    if (dueDate !== undefined) updateData.dueDate = dueDate;
 
     await todoRef.update(updateData);
     const updatedDoc = await todoRef.get();

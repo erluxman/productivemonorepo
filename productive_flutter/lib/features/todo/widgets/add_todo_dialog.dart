@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/core/user/providers/points_provider.dart'
     as core_points;
-import 'package:productive_flutter/core/theme/app_theme.dart';
 import 'package:productive_flutter/models/todo.dart';
 
 import '../../../core/todo/providers/todos_provider.dart';
@@ -178,8 +178,11 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
       final result = await ref.read(todosProvider.notifier).updateTodo(
             id: widget.todoToEdit!.id,
             title: _todoTitle,
-            description:
-                _todoDescription.isNotEmpty ? _todoDescription : null,
+            description: _todoDescription.isNotEmpty ? _todoDescription : null,
+            dueDate: _dueDate,
+            category: _selectedCategory!,
+            completed: false,
+            createdAt: DateTime.now(),
           );
 
       if (!mounted) return;
@@ -219,11 +222,14 @@ class _AddTodoDialogState extends ConsumerState<AddTodoDialog>
         category: _selectedCategory!,
         createdAt: DateTime.now(),
         description: _todoDescription,
+        completed: false,
+        isUrgent: false,
+        feedMessage: null,
+        updatedAt: DateTime.now(),
       );
 
-      final result = await ref.read(todosProvider.notifier).createTodo(
-            todo: newTodo,
-          );
+      final result =
+          await ref.read(todosProvider.notifier).createTodo(todo: newTodo);
 
       if (!mounted) return;
 

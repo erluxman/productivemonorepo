@@ -16,6 +16,8 @@ class UpdateTodoUseCase {
     String? title,
     String? description,
     bool? completed,
+    DateTime? dueDate,
+    TodoCategory? category,
   }) async {
     // Validation
     if (id == null || id.trim().isEmpty) {
@@ -32,6 +34,8 @@ class UpdateTodoUseCase {
       title: title?.trim(),
       description: description?.trim(),
       completed: completed,
+      dueDate: dueDate,
+      category: category,
     );
   }
 }

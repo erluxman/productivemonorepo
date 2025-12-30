@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:productive_flutter/features/splash/splash_screen.dart';
 import 'package:productive_flutter/core/auth/providers/auth_provider.dart';
 import 'package:productive_flutter/core/navigation/navigation_extension.dart';
 import 'package:productive_flutter/core/theme/theme_notifier.dart';
+import 'package:productive_flutter/features/splash/splash_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -129,13 +129,32 @@ class ProfileScreen extends ConsumerWidget {
             color: Colors.blue,
             borderRadius: BorderRadius.circular(32),
           ),
-          child: const Text(
-            'Top 5% this week',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+          child: Column(
+            children: [
+              RichText(
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Level : 5 ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          '(Top 3%)',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],

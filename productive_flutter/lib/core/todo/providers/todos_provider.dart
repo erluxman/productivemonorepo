@@ -108,12 +108,17 @@ class TodosNotifier extends StateNotifier<AsyncValue<List<Todo>>> {
     String? title,
     String? description,
     bool? completed,
+    DateTime? dueDate,
+    TodoCategory? category,
+    DateTime? createdAt,
   }) async {
     final result = await _updateTodoUseCase.execute(
       id: id,
       title: title,
       description: description,
       completed: completed,
+      dueDate: dueDate,
+      category: category,
     );
     
     return result.fold(

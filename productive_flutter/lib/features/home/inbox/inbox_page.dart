@@ -179,39 +179,60 @@ class InboxPage extends ConsumerWidget {
       BuildContext context, WidgetRef ref, Todo todo) async {
     if (todo.completed == false) {
       // Play sound when completing a todo
-      SoundService().playTodoCompleteSound();
+      // Completing a todo - show dialog first, then add points
+      final result = await ref.read(todosProvider.notifier).updateTodo(
+            id: todo.id,
+            completed: true,
+          );
 
-      // Show success dialog only when completing a todo
-      final targetPosition = _getPointsPosition(context);
-      if (targetPosition != null) {
-        final feedMessage = await showDialog<String>(
-          context: context,
-          barrierDismissible: true,
-          builder: (context) => TodoSuccessDialog(
-            targetPosition: targetPosition,
-          ),
-        );
-
-        // Only add points if the dialog was confirmed (not dismissed)
-        if (feedMessage != null && context.mounted) {
-          ref.read(pointsProvider.notifier).addPoints(5);
-
-          // Update with feed message if provided
-          if (feedMessage.isNotEmpty) {
-            await ref.read(todosProvider.notifier).updateTodo(
-                  id: todo.id,
-                  description: feedMessage,
-                  completed: true,
-                );
+      // Handle Either result
+      result.fold(
+        (error) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.message),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
-        } else if (context.mounted) {
-          // Dialog was dismissed, revert the todo completion
-          await ref.read(todosProvider.notifier).updateTodo(
-                id: todo.id,
-                completed: false,
-              );
-        }
-      }
+        },
+        (updatedTodo) async {
+          SoundService().playTodoCompleteSound();
+
+          // Show success dialog only when completing a todo
+          final targetPosition = _getPointsPosition(context);
+          if (targetPosition != null) {
+            final feedMessage = await showDialog<String>(
+              context: context,
+              barrierDismissible: true,
+              builder: (context) => TodoSuccessDialog(
+                targetPosition: targetPosition,
+              ),
+            );
+
+            // Only add points if the dialog was confirmed (not dismissed)
+            if (feedMessage != null && context.mounted) {
+              ref.read(pointsProvider.notifier).addPoints(5);
+
+              // Update with feed message if provided
+              if (feedMessage.isNotEmpty) {
+                await ref.read(todosProvider.notifier).updateTodo(
+                      id: todo.id,
+                      description: feedMessage,
+                      completed: true,
+                    );
+              }
+            } else if (context.mounted) {
+              // Dialog was dismissed, revert the todo completion
+              await ref.read(todosProvider.notifier).updateTodo(
+                    id: todo.id,
+                    completed: false,
+                  );
+            }
+          }
+        },
+      );
     } else {
       // Unchecking a completed todo - subtract points and update
       final result = await ref.read(todosProvider.notifier).updateTodo(

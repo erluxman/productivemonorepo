@@ -69,6 +69,8 @@ class TodoService {
     String? title,
     String? description,
     bool? completed,
+    DateTime? dueDate,
+    TodoCategory? category,
   }) async {
     try {
       if (id == null) {
@@ -83,6 +85,8 @@ class TodoService {
               if (title != null) 'title': title,
               if (description != null) 'description': description,
               if (completed != null) 'completed': completed,
+              if (dueDate != null) 'dueDate': dueDate.toIso8601String(),
+              if (category != null) 'category': category.name,
             }),
           )
           .timeout(AppConfig.networkTimeout);
